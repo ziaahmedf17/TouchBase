@@ -20,7 +20,18 @@ document.addEventListener('DOMContentLoaded', function () {
         'Accept': 'application/json',
       },
       body: JSON.stringify(data),
-    }).then(r => r.json());
+    }).then(function (r) {
+      return r.text().then(function (text) {
+        var json = null;
+        try { json = JSON.parse(text); } catch (e) {}
+        if (!r.ok) {
+          var msg = (json && json.message) ? json.message : ('Server error ' + r.status);
+          throw new Error(msg);
+        }
+        if (!json) throw new Error('Invalid server response');
+        return json;
+      });
+    });
   }
 
   function del(url) {
@@ -115,11 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
           alertResult.textContent = data.message;
         }
         updateBellCount(data.unread_count);
-      }).catch(function () {
+      }).catch(function (err) {
         if (alertResult) {
           alertResult.style.display = 'block';
           alertResult.className = 'alert alert-danger';
-          alertResult.textContent = 'Could not reach server. Please try again.';
+          alertResult.textContent = (err && err.message) ? err.message : 'Could not reach server. Please try again.';
         }
       }).finally(function () {
         updateBtn.classList.remove('loading');
@@ -168,9 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         body.innerHTML = events.map(function (ev) {
           return '<div class="notif-item">'
-            + '<div class="notif-item-title">' + escHtml(ev.client) + ' — ' + escHtml(ev.type) + '</div>'
-            + '<div class="notif-item-meta">' + escHtml(ev.label || '') + '</div>'
+            + '<div class="notif-item-title">'
+            +   '<span class="badge ' + escHtml(ev.badge || '') + '" style="margin-right:.4rem;">' + escHtml(ev.type) + '</span>'
+            +   escHtml(ev.client)
+            + '</div>'
+            + (ev.label ? '<div class="notif-item-meta">' + escHtml(ev.label) + '</div>' : '')
             + '<div class="notif-actions mt-2">'
+            + (ev.client_url ? '<a href="' + escHtml(ev.client_url) + '" class="btn btn-sm btn-primary">View Client</a>' : '')
             + (ev.phone ? '<a href="tel:' + escHtml(ev.phone) + '" class="btn btn-sm btn-success">Call</a>' : '')
             + (ev.phone ? '<a href="https://wa.me/' + escHtml(ev.phone.replace(/\D/g,'')) + '" target="_blank" class="btn btn-sm btn-primary">WhatsApp</a>' : '')
             + (ev.phone ? '<button class="btn btn-sm btn-secondary" data-copy="' + escHtml(ev.phone) + '">Copy #</button>' : '')

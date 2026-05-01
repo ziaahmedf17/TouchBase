@@ -32,10 +32,12 @@
       $dayEvents = $calendarData[$day] ?? [];
       // Serialize events for JS click handler
       $eventsJson = json_encode(collect($dayEvents)->map(fn($e) => [
-        'client' => $e->client?->name ?? '—',
-        'type'   => $e->typeLabel(),
-        'label'  => $e->label,
-        'phone'  => $e->client?->phone,
+        'client'     => $e->client?->name ?? '—',
+        'client_url' => $e->client ? route('clients.show', $e->client) : null,
+        'type'       => $e->typeLabel(),
+        'badge'      => $e->badgeClass(),
+        'label'      => $e->label,
+        'phone'      => $e->client?->phone,
       ])->values()->all());
     @endphp
 
@@ -45,9 +47,16 @@
       <div class="cal-date">{{ $day }}</div>
 
       @foreach($dayEvents as $ev)
-        <span class="cal-event {{ $ev->badgeClass() }}">
-          {{ $ev->client?->name }} — {{ $ev->typeLabel() }}
-        </span>
+        @if($ev->client)
+          <a href="{{ route('clients.show', $ev->client) }}"
+             class="cal-event {{ $ev->badgeClass() }}"
+             onclick="event.stopPropagation()"
+             title="{{ $ev->client->name }} — {{ $ev->typeLabel() }}">
+            {{ $ev->client->name }} — {{ $ev->typeLabel() }}
+          </a>
+        @else
+          <span class="cal-event {{ $ev->badgeClass() }}">{{ $ev->typeLabel() }}</span>
+        @endif
       @endforeach
     </div>
   @endfor

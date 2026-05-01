@@ -345,6 +345,14 @@ tr:hover td { background: #f1f5f9; }
   text-overflow: ellipsis;
   font-weight: 500;
 }
+a.cal-event {
+  text-decoration: none;
+  cursor: pointer;
+}
+a.cal-event:hover {
+  opacity: .85;
+  text-decoration: underline;
+}
 
 /* ── Client profile header ── */
 .profile-header {

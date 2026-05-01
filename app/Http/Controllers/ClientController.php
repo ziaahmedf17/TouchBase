@@ -51,15 +51,15 @@ class ClientController extends Controller
                 continue;
             }
 
-            $isAnnual = in_array($evt['type'], ['birthday', 'anniversary'])
-                ? true
-                : (isset($evt['is_annual']) && $evt['is_annual'] == '1');
+            $recurrence = in_array($evt['type'], ['birthday', 'anniversary'])
+                ? 'annual'
+                : ($evt['recurrence'] ?? 'none');
 
             $client->events()->create([
                 'type'          => $evt['type'],
                 'label'         => $evt['label'] ?? null,
                 'event_date'    => $evt['event_date'],
-                'is_annual'     => $isAnnual,
+                'recurrence'    => $recurrence,
                 'reminder_days' => $this->parseReminderDays($evt['reminder_days'] ?? ''),
             ]);
         }

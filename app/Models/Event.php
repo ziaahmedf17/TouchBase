@@ -14,13 +14,12 @@ class Event extends Model
         'type',
         'label',
         'event_date',
-        'is_annual',
+        'recurrence',
         'reminder_days',
     ];
 
     protected $casts = [
         'event_date'    => 'date',
-        'is_annual'     => 'boolean',
         'reminder_days' => 'array',
     ];
 
@@ -46,28 +45,60 @@ class Event extends Model
         };
     }
 
+    public function recurrenceLabel(): string
+    {
+        return match ($this->recurrence) {
+            'weekly'   => 'Weekly',
+            'biweekly' => 'Bi-weekly',
+            'monthly'  => 'Monthly',
+            'annual'   => 'Annual',
+            default    => 'None',
+        };
+    }
+
     /**
-     * For annual events: next occurrence from today.
-     * For one-time events: the event_date itself.
+     * Next occurrence of this event from today, based on recurrence.
      */
     public function nextOccurrence(): Carbon
     {
-        if (! $this->is_annual) {
-            return $this->event_date->copy();
-        }
-
         $today = now()->startOfDay();
-        $occurrence = Carbon::create(
-            $today->year,
-            $this->event_date->month,
-            $this->event_date->day
-        );
+        $base  = $this->event_date->copy()->startOfDay();
 
-        if ($occurrence->lt($today)) {
-            $occurrence->addYear();
+        if ($this->recurrence === 'none' || ! $this->recurrence) {
+            return $base;
         }
 
-        return $occurrence;
+        if ($base->gte($today)) {
+            return $base;
+        }
+
+        switch ($this->recurrence) {
+            case 'weekly':
+                $weeks = (int) ceil($base->diffInDays($today) / 7);
+                $next  = $base->copy()->addWeeks($weeks);
+                if ($next->lt($today)) $next->addWeek();
+                return $next;
+
+            case 'biweekly':
+                $periods = (int) ceil($base->diffInDays($today) / 14);
+                $next    = $base->copy()->addDays($periods * 14);
+                if ($next->lt($today)) $next->addDays(14);
+                return $next;
+
+            case 'monthly':
+                $months = $base->diffInMonths($today);
+                $next   = $base->copy()->addMonths($months);
+                if ($next->lt($today)) $next->addMonth();
+                return $next;
+
+            case 'annual':
+                $next = Carbon::create($today->year, $base->month, $base->day)->startOfDay();
+                if ($next->lt($today)) $next->addYear();
+                return $next;
+
+            default:
+                return $base;
+        }
     }
 
     /** Badge colour for calendar/UI */

@@ -46,25 +46,56 @@ class CalendarController extends Controller
     }
 
     /**
-     * Returns which days of the given month/year this event falls on.
-     * Annual events are matched by month+day. One-time events by exact date.
+     * Returns which days of the given month/year this event falls on,
+     * based on its recurrence type.
      */
     private function getEventDaysInMonth(Event $event, int $year, int $month): array
     {
-        $days = [];
+        $days       = [];
+        $base       = $event->event_date->copy()->startOfDay();
+        $monthStart = Carbon::create($year, $month, 1)->startOfDay();
+        $monthEnd   = $monthStart->copy()->endOfMonth()->startOfDay();
 
-        if ($event->is_annual) {
-            if ($event->event_date->month === $month) {
-                $day = $event->event_date->day;
-                $daysInMonth = Carbon::create($year, $month, 1)->daysInMonth;
-                if ($day <= $daysInMonth) {
-                    $days[] = $day;
+        switch ($event->recurrence) {
+            case 'annual':
+                if ($base->month === $month && $base->day <= $monthStart->daysInMonth) {
+                    $days[] = $base->day;
                 }
-            }
-        } else {
-            if ($event->event_date->year === $year && $event->event_date->month === $month) {
-                $days[] = $event->event_date->day;
-            }
+                break;
+
+            case 'monthly':
+                // Only show from the month the event started
+                if ($monthStart->gte($base->copy()->startOfMonth())) {
+                    $day = $base->day;
+                    if ($day <= $monthStart->daysInMonth) {
+                        $days[] = $day;
+                    }
+                }
+                break;
+
+            case 'weekly':
+            case 'biweekly':
+                $interval = $event->recurrence === 'weekly' ? 7 : 14;
+                $cursor   = $base->copy();
+                // Fast-forward close to month start
+                if ($cursor->lt($monthStart)) {
+                    $steps  = (int) floor($cursor->diffInDays($monthStart) / $interval);
+                    $cursor->addDays($steps * $interval);
+                }
+                while ($cursor->lte($monthEnd)) {
+                    if ($cursor->year === $year && $cursor->month === $month) {
+                        $days[] = $cursor->day;
+                    }
+                    $cursor->addDays($interval);
+                }
+                break;
+
+            case 'none':
+            default:
+                if ($base->year === $year && $base->month === $month) {
+                    $days[] = $base->day;
+                }
+                break;
         }
 
         return $days;

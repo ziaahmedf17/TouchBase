@@ -41,13 +41,16 @@
       </div>
     </div>
 
-    <div class="form-group" id="annual-group">
-      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
-        <input type="hidden" name="is_annual" value="0">
-        <input type="checkbox" name="is_annual" value="1" {{ old('is_annual') ? 'checked' : '' }}>
-        <span>Repeats every year (annual event)</span>
-      </label>
-      <div class="form-hint">Birthday & Anniversary are always annual.</div>
+    <div class="form-group" id="recurrence-group">
+      <label class="form-label">Recurrence</label>
+      <select class="form-control" name="recurrence" id="recurrence-select">
+        <option value="none"     {{ old('recurrence', 'none') === 'none'     ? 'selected' : '' }}>No repeat (one-time)</option>
+        <option value="weekly"   {{ old('recurrence') === 'weekly'           ? 'selected' : '' }}>Weekly</option>
+        <option value="biweekly" {{ old('recurrence') === 'biweekly'         ? 'selected' : '' }}>Bi-weekly (every 2 weeks)</option>
+        <option value="monthly"  {{ old('recurrence') === 'monthly'          ? 'selected' : '' }}>Monthly</option>
+        <option value="annual"   {{ old('recurrence') === 'annual'           ? 'selected' : '' }}>Annual (every year)</option>
+      </select>
+      <div class="form-hint" id="recurrence-hint" style="display:none;">Birthday &amp; Anniversary always repeat annually.</div>
     </div>
 
     <div class="d-flex gap-2 mt-2">
@@ -59,20 +62,21 @@
 
 @push('scripts')
 <script>
-  const typeSelect  = document.getElementById('event-type');
-  const labelGroup  = document.getElementById('label-group');
-  const annualGroup = document.getElementById('annual-group');
-  const annualBox   = annualGroup.querySelector('input[type=checkbox]');
+  const typeSelect      = document.getElementById('event-type');
+  const labelGroup      = document.getElementById('label-group');
+  const recurrenceSelect = document.getElementById('recurrence-select');
+  const recurrenceHint  = document.getElementById('recurrence-hint');
 
   function updateFields() {
     const t = typeSelect.value;
-    labelGroup.style.display  = t === 'custom'  ? '' : 'none';
-    // Birthday/anniversary always annual — hide the checkbox
+    labelGroup.style.display = t === 'custom' ? '' : 'none';
     if (t === 'birthday' || t === 'anniversary') {
-      annualGroup.style.display = 'none';
-      annualBox.checked = true;
+      recurrenceSelect.value    = 'annual';
+      recurrenceSelect.disabled = true;
+      recurrenceHint.style.display = '';
     } else {
-      annualGroup.style.display = '';
+      recurrenceSelect.disabled = false;
+      recurrenceHint.style.display = 'none';
     }
   }
 

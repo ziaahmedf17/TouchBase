@@ -105,30 +105,36 @@
           </div>
         </div>
 
-        <div class="form-group event-annual-group">
-          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
-            <input type="hidden" name="events[${i}][is_annual]" value="0">
-            <input type="checkbox" name="events[${i}][is_annual]" value="1">
-            <span>Repeats every year (annual)</span>
-          </label>
+        <div class="form-group event-recurrence-group">
+          <label class="form-label">Recurrence</label>
+          <select class="form-control event-recurrence-select" name="events[${i}][recurrence]">
+            <option value="none">No repeat (one-time)</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Bi-weekly (every 2 weeks)</option>
+            <option value="monthly">Monthly</option>
+            <option value="annual">Annual (every year)</option>
+          </select>
+          <div class="form-hint recurrence-note" style="display:none;">Birthday &amp; Anniversary always repeat annually.</div>
         </div>
       </div>`;
   };
 
   function bindRow(row) {
-    const typeSelect  = row.querySelector('.event-type-select');
-    const labelGroup  = row.querySelector('.event-label-group');
-    const annualGroup = row.querySelector('.event-annual-group');
-    const annualBox   = annualGroup.querySelector('input[type=checkbox]');
+    const typeSelect       = row.querySelector('.event-type-select');
+    const labelGroup       = row.querySelector('.event-label-group');
+    const recurrenceSelect = row.querySelector('.event-recurrence-select');
+    const recurrenceNote   = row.querySelector('.recurrence-note');
 
     typeSelect.addEventListener('change', function () {
       const t = this.value;
       labelGroup.style.display = t === 'custom' ? '' : 'none';
       if (t === 'birthday' || t === 'anniversary') {
-        annualGroup.style.display = 'none';
-        annualBox.checked = true;
+        recurrenceSelect.value    = 'annual';
+        recurrenceSelect.disabled = true;
+        recurrenceNote.style.display = '';
       } else {
-        annualGroup.style.display = '';
+        recurrenceSelect.disabled = false;
+        recurrenceNote.style.display = 'none';
       }
     });
 

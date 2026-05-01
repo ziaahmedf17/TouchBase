@@ -19,20 +19,17 @@ class EventController extends Controller
             'type'          => 'required|in:birthday,anniversary,visit,custom',
             'label'         => 'nullable|string|max:100',
             'event_date'    => 'required|date',
-            'is_annual'     => 'boolean',
+            'recurrence'    => 'nullable|in:none,weekly,biweekly,monthly,annual',
             'reminder_days' => 'nullable|string',
         ]);
 
         $data['client_id']     = $client->id;
-        $data['is_annual']     = $request->boolean('is_annual');
+        $data['recurrence']    = in_array($data['type'], ['birthday', 'anniversary'])
+            ? 'annual'
+            : ($request->input('recurrence', 'none'));
         $data['reminder_days'] = $this->parseReminderDays(
             $request->input('reminder_days', '')
         );
-
-        // Birthday and anniversary are always annual
-        if (in_array($data['type'], ['birthday', 'anniversary'])) {
-            $data['is_annual'] = true;
-        }
 
         Event::create($data);
 
@@ -55,18 +52,16 @@ class EventController extends Controller
             'type'          => 'required|in:birthday,anniversary,visit,custom',
             'label'         => 'nullable|string|max:100',
             'event_date'    => 'required|date',
-            'is_annual'     => 'boolean',
+            'recurrence'    => 'nullable|in:none,weekly,biweekly,monthly,annual',
             'reminder_days' => 'nullable|string',
         ]);
 
-        $data['is_annual']     = $request->boolean('is_annual');
+        $data['recurrence']    = in_array($data['type'], ['birthday', 'anniversary'])
+            ? 'annual'
+            : ($request->input('recurrence', 'none'));
         $data['reminder_days'] = $this->parseReminderDays(
             $request->input('reminder_days', '')
         );
-
-        if (in_array($data['type'], ['birthday', 'anniversary'])) {
-            $data['is_annual'] = true;
-        }
 
         $event->update($data);
 

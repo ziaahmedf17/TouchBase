@@ -77,7 +77,7 @@
         <tr>
           <th>Type</th>
           <th>Date</th>
-          <th>Annual</th>
+          <th>Recurrence</th>
           <th>Remind (days)</th>
           <th>Actions</th>
         </tr>
@@ -87,7 +87,7 @@
         <tr>
           <td><span class="badge {{ $event->badgeClass() }}">{{ $event->typeLabel() }}</span></td>
           <td>{{ $event->event_date->format('d M Y') }}</td>
-          <td>{{ $event->is_annual ? 'Yes' : 'No' }}</td>
+          <td>{{ $event->recurrenceLabel() }}</td>
           <td>{{ implode(', ', $event->reminder_days ?? []) ?: '—' }}</td>
           <td>
             <div class="d-flex gap-2">
