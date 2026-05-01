@@ -6,7 +6,7 @@
 {{-- Profile header --}}
 <div class="profile-header">
   <div class="avatar">{{ strtoupper(substr($client->name, 0, 1)) }}</div>
-  <div style="flex:1">
+  <div class="profile-header-info">
     <div class="profile-name">{{ $client->name }}</div>
     <div class="profile-meta">
       @if($client->phone)
@@ -15,17 +15,22 @@
       @if($client->address) {{ $client->address }} @endif
     </div>
   </div>
-  <div class="d-flex gap-2">
+  <div class="profile-header-actions">
     @if($client->phone)
       <a href="{{ $client->telUrl() }}" class="btn btn-success btn-sm">&#128222; Call</a>
       <a href="{{ $client->whatsappUrl() }}" target="_blank" class="btn btn-primary btn-sm">&#128172; WA</a>
       <button class="btn btn-secondary btn-sm" data-copy="{{ $client->phone }}">Copy #</button>
     @endif
+    <button class="btn btn-secondary btn-sm"
+            data-open-log
+            data-client-id="{{ $client->id }}">
+      + Log
+    </button>
     <a href="{{ route('clients.edit', $client) }}" class="btn btn-secondary btn-sm">Edit</a>
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+<div class="grid-2col">
 
   {{-- Details --}}
   <div class="card">
@@ -59,6 +64,99 @@
   </div>
 </div>
 
+{{-- Interactions --}}
+<div class="card mt-3">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+    <div class="card-title" style="margin:0;">
+      Interactions
+      @if($client->interactions->isNotEmpty())
+        <span class="text-muted" style="font-size:.8rem;font-weight:400;margin-left:.4rem;">({{ $client->interactions->count() }})</span>
+      @endif
+    </div>
+    <button class="btn btn-sm btn-primary"
+            data-open-log
+            data-client-id="{{ $client->id }}">
+      + Log Interaction
+    </button>
+  </div>
+
+  @if($client->interactions->isEmpty())
+    <div class="empty-state" style="padding:1.5rem;">
+      <p>No interactions logged yet. Use <strong>+ Log Interaction</strong> after reaching out.</p>
+    </div>
+  @else
+  <div class="table-wrap">
+    <table class="table-cards">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th>Response</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($client->interactions as $ix)
+        <tr>
+          <td data-label="Date" style="white-space:nowrap;">
+            {{ $ix->contacted_at->format('d M Y') }}
+            <span class="text-muted" style="font-size:.75rem;">{{ $ix->contacted_at->format('H:i') }}</span>
+          </td>
+          <td data-label="Type"><span class="badge {{ $ix->typeBadgeClass() }}">{{ $ix->typeLabel() }}</span></td>
+          <td data-label="Status"><span class="badge {{ $ix->statusBadgeClass() }}">{{ $ix->statusLabel() }}</span></td>
+          <td data-label="Notes">
+            <div>
+              @if($ix->notes)
+                <span style="font-size:.85rem;">{{ $ix->notes }}</span>
+              @else
+                <span class="text-muted">—</span>
+              @endif
+              @if($ix->notification)
+                <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">
+                  Re: {{ $ix->notification->message }}
+                </div>
+              @endif
+            </div>
+          </td>
+          <td data-label="Response">
+            <div>
+              @if($ix->response_notes)
+                <span style="font-size:.85rem;">{{ $ix->response_notes }}</span>
+                @if($ix->response_at)
+                  <div class="text-muted" style="font-size:.75rem;">{{ $ix->response_at->format('d M Y H:i') }}</div>
+                @endif
+              @else
+                <span class="text-muted" style="font-size:.8rem;">No response logged</span>
+              @endif
+            </div>
+          </td>
+          <td data-label="Actions">
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-secondary"
+                      data-open-response
+                      data-interaction-id="{{ $ix->id }}"
+                      data-status="{{ $ix->status }}"
+                      data-response-notes="{{ $ix->response_notes ?? '' }}"
+                      data-response-at="{{ $ix->response_at ? $ix->response_at->format('Y-m-d\TH:i') : '' }}">
+                Update
+              </button>
+              <form method="POST" action="{{ route('interactions.destroy', $ix) }}"
+                    data-confirm="Delete this interaction?">
+                @csrf @method('DELETE')
+                <button class="btn btn-sm btn-danger">Del</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+  @endif
+</div>
+
 {{-- Events --}}
 <div class="card mt-3">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
@@ -72,7 +170,7 @@
     </div>
   @else
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Type</th>
@@ -85,11 +183,11 @@
       <tbody>
         @foreach($client->events as $event)
         <tr>
-          <td><span class="badge {{ $event->badgeClass() }}">{{ $event->typeLabel() }}</span></td>
-          <td>{{ $event->event_date->format('d M Y') }}</td>
-          <td>{{ $event->recurrenceLabel() }}</td>
-          <td>{{ implode(', ', $event->reminder_days ?? []) ?: '—' }}</td>
-          <td>
+          <td data-label="Type"><span class="badge {{ $event->badgeClass() }}">{{ $event->typeLabel() }}</span></td>
+          <td data-label="Date">{{ $event->event_date->format('d M Y') }}</td>
+          <td data-label="Recurrence">{{ $event->recurrenceLabel() }}</td>
+          <td data-label="Remind">{{ implode(', ', $event->reminder_days ?? []) ?: '—' }}</td>
+          <td data-label="Actions">
             <div class="d-flex gap-2">
               <a href="{{ route('clients.events.edit', [$client, $event]) }}" class="btn btn-sm btn-primary">Edit</a>
               <form method="POST" action="{{ route('clients.events.destroy', [$client, $event]) }}"
@@ -115,4 +213,5 @@
   </form>
 </div>
 
+@include('partials.interaction_modals')
 @endsection

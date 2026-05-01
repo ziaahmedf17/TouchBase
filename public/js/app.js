@@ -44,6 +44,52 @@ document.addEventListener('DOMContentLoaded', function () {
     }).then(r => r.json());
   }
 
+  // ── Hamburger menu (mobile) ───────────────
+  var hamburgerBtn = document.getElementById('hamburger-btn');
+  var navLinks     = document.getElementById('nav-links');
+
+  if (hamburgerBtn && navLinks) {
+    hamburgerBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = navLinks.classList.toggle('open');
+      hamburgerBtn.classList.toggle('open', open);
+      hamburgerBtn.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', function (e) {
+      if (!navLinks.contains(e.target) && e.target !== hamburgerBtn) {
+        navLinks.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    // Close menu when a nav link is tapped on mobile
+    navLinks.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        navLinks.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // ── User menu dropdown ────────────────────
+  var userMenuBtn    = document.getElementById('user-menu-btn');
+  var userDropdown   = document.getElementById('user-dropdown');
+
+  if (userMenuBtn && userDropdown) {
+    userMenuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      userDropdown.classList.toggle('open');
+      // close bell if open
+      if (notifDropdown) notifDropdown.classList.remove('open');
+    });
+    document.addEventListener('click', function (e) {
+      if (!userDropdown.contains(e.target)) {
+        userDropdown.classList.remove('open');
+      }
+    });
+  }
+
   // ── Notification Bell ─────────────────────
   const bellBtn     = document.getElementById('bell-btn');
   const bellBadge   = document.getElementById('bell-badge');
@@ -74,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
     bellBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       notifDropdown.classList.toggle('open');
+      // close user menu if open
+      var ud = document.getElementById('user-dropdown');
+      if (ud) ud.classList.remove('open');
     });
     document.addEventListener('click', function (e) {
       if (!notifDropdown.contains(e.target)) {
@@ -82,31 +131,29 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ── Mark notification read ────────────────
-  document.querySelectorAll('[data-mark-read]').forEach(function (el) {
-    el.addEventListener('click', function () {
-      const id  = el.dataset.markRead;
-      const row = el.closest('.notif-item');
-      post('/notifications/' + id + '/read').then(function (d) {
-        if (d.ok && row) {
-          row.classList.remove('unread');
-        }
-        pollUnreadCount();
-      });
+  // ── Mark notification read (delegated) ───────────────────
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('[data-mark-read]');
+    if (!el || e.target.closest('[data-delete-notif]')) return;
+    const id  = el.dataset.markRead;
+    const row = el.closest('.notif-item');
+    post('/notifications/' + id + '/read').then(function (d) {
+      if (d.ok && row) row.classList.remove('unread');
+      pollUnreadCount();
     });
   });
 
-  // ── Delete notification ───────────────────
-  document.querySelectorAll('[data-delete-notif]').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      e.stopPropagation();
-      const id  = el.dataset.deleteNotif;
-      const row = el.closest('.notif-item, tr');
-      if (!confirm('Remove this notification?')) return;
-      del('/notifications/' + id).then(function (d) {
-        if (d.ok && row) row.remove();
-        pollUnreadCount();
-      });
+  // ── Delete notification (delegated) ──────────────────────
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('[data-delete-notif]');
+    if (!el) return;
+    e.stopPropagation();
+    const id  = el.dataset.deleteNotif;
+    const row = el.closest('.notif-item, tr');
+    if (!confirm('Remove this notification?')) return;
+    del('/notifications/' + id).then(function (d) {
+      if (d.ok && row) row.remove();
+      pollUnreadCount();
     });
   });
 
@@ -120,46 +167,53 @@ document.addEventListener('DOMContentLoaded', function () {
       updateBtn.textContent = 'Checking…';
 
       post('/update-alerts').then(function (data) {
+        // Refresh the notifications list
+        var body = document.getElementById('recent-alerts-body');
+        if (body && data.html) body.innerHTML = data.html;
+
+        // Refresh the unread stat card
+        var statUnread = document.getElementById('stat-unread');
+        if (statUnread) statUnread.textContent = data.unread_stat;
+
         if (alertResult) {
-          alertResult.style.display = 'block';
+          alertResult.style.display = '';
           alertResult.className = 'alert alert-' + (data.created > 0 ? 'success' : 'info');
           alertResult.textContent = data.message;
         }
         updateBellCount(data.unread_count);
       }).catch(function (err) {
         if (alertResult) {
-          alertResult.style.display = 'block';
+          alertResult.style.display = '';
           alertResult.className = 'alert alert-danger';
           alertResult.textContent = (err && err.message) ? err.message : 'Could not reach server. Please try again.';
         }
       }).finally(function () {
         updateBtn.classList.remove('loading');
-        updateBtn.textContent = 'Update Alerts';
+        updateBtn.textContent = '🔔 Update Alerts';
       });
     });
   }
 
-  // ── Copy phone to clipboard ───────────────
-  document.querySelectorAll('[data-copy]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const text = btn.dataset.copy;
-      if (!text) return;
-      navigator.clipboard.writeText(text).then(function () {
-        const orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 1500);
-      }).catch(function () {
-        // Fallback for older browsers / non-HTTPS
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        const orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = orig; }, 1500);
-      });
+  // ── Copy phone to clipboard (delegated) ──────────────────
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    const text = btn.dataset.copy;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function () {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    }).catch(function () {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
     });
   });
 
@@ -216,6 +270,64 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeBtn = document.getElementById('cal-modal-close');
     if (closeBtn) closeBtn.addEventListener('click', () => calModal.style.display = 'none');
   }
+
+  // ── Interaction Modals ────────────────────
+
+  function openModal(id) {
+    var m = document.getElementById(id);
+    if (m) m.classList.add('open');
+  }
+
+  function closeModal(id) {
+    var m = document.getElementById(id);
+    if (m) m.classList.remove('open');
+  }
+
+  // Close on overlay click or close button
+  document.addEventListener('click', function (e) {
+    var closeBtn = e.target.closest('[data-close-modal]');
+    if (closeBtn) {
+      closeModal(closeBtn.dataset.closeModal);
+      return;
+    }
+    if (e.target.classList.contains('modal-overlay')) {
+      e.target.classList.remove('open');
+    }
+  });
+
+  // Close modals on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(function (m) {
+        m.classList.remove('open');
+      });
+    }
+  });
+
+  // Open Log Interaction modal
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-open-log]');
+    if (!btn) return;
+    document.getElementById('log-client-id').value       = btn.dataset.clientId || '';
+    document.getElementById('log-notification-id').value = btn.dataset.notificationId || '';
+    document.getElementById('log-contacted-at').value    = new Date().toISOString().slice(0, 16);
+    document.getElementById('log-notes').value           = '';
+    document.getElementById('log-type').value            = 'call';
+    document.getElementById('log-status').value          = 'reached_out';
+    openModal('log-modal');
+  });
+
+  // Open Update Response modal
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-open-response]');
+    if (!btn) return;
+    var form = document.getElementById('response-form');
+    form.action = '/interactions/' + btn.dataset.interactionId;
+    document.getElementById('resp-status').value = btn.dataset.status || 'reached_out';
+    document.getElementById('resp-notes').value  = btn.dataset.responseNotes || '';
+    document.getElementById('resp-at').value     = btn.dataset.responseAt || '';
+    openModal('response-modal');
+  });
 
   // ── Auto-dismiss flash alerts ─────────────
   document.querySelectorAll('.alert[data-auto-dismiss]').forEach(function (el) {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Interaction;
 
 class Client extends Model
 {
@@ -32,6 +33,11 @@ class Client extends Model
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(Interaction::class);
     }
 
     /** WhatsApp link helper */

@@ -14,14 +14,24 @@
 <nav class="navbar">
   <a href="{{ route('dashboard') }}" class="navbar-brand">&#9679; TouchBase</a>
 
-  <div class="nav-links">
+  {{-- Desktop nav links (flex: 1 pushes right side over) --}}
+  <div class="nav-links" id="nav-links">
     <a href="{{ route('dashboard') }}"      class="{{ request()->routeIs('dashboard')       ? 'active' : '' }}"><span>Dashboard</span></a>
     <a href="{{ route('clients.index') }}"  class="{{ request()->routeIs('clients.*')       ? 'active' : '' }}"><span>Clients</span></a>
     <a href="{{ route('calendar.index') }}" class="{{ request()->routeIs('calendar.*')      ? 'active' : '' }}"><span>Calendar</span></a>
     <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}"><span>Alerts</span></a>
+    @auth
+      @if(auth()->user()->isAdmin())
+        <a href="{{ route('admin.roles.index') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}"><span>Admin</span></a>
+      @endif
+    @endauth
   </div>
 
   <div class="navbar-right">
+    {{-- Hamburger (mobile only) --}}
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
     {{-- Bell icon with dropdown --}}
     <div class="bell-wrap">
       <button id="bell-btn" class="bell-btn" title="Notifications">&#128276;</button>
@@ -67,6 +77,33 @@
         </div>
       </div>
     </div>
+
+    {{-- User menu --}}
+    @auth
+    <div class="user-menu-wrap">
+      <button id="user-menu-btn" class="user-menu-btn" title="Account">
+        <span class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+        <span class="user-name">{{ auth()->user()->name }}</span>
+        <span style="font-size:.7rem;opacity:.75;">&#9660;</span>
+      </button>
+      <div id="user-dropdown" class="user-dropdown">
+        <div class="user-dropdown-header">
+          <div style="font-weight:600;font-size:.9rem;">{{ auth()->user()->name }}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem;">{{ auth()->user()->email }}</div>
+        </div>
+        <a href="{{ route('password.change') }}" class="user-dropdown-item">
+          &#128274; Change Password
+        </a>
+        <div class="user-dropdown-divider"></div>
+        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+          @csrf
+          <button type="submit" class="user-dropdown-item user-dropdown-item--danger" style="width:100%;text-align:left;">
+            &#8594; Sign Out
+          </button>
+        </form>
+      </div>
+    </div>
+    @endauth
   </div>
 </nav>
 

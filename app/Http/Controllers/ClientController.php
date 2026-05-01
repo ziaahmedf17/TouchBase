@@ -70,9 +70,15 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        $client->load(['events', 'notifications' => function ($q) {
-            $q->latest()->take(10);
-        }]);
+        $client->load([
+            'events',
+            'notifications' => function ($q) {
+                $q->latest()->take(10);
+            },
+            'interactions' => function ($q) {
+                $q->with('notification')->latest('contacted_at');
+            },
+        ]);
 
         return view('clients.show', compact('client'));
     }

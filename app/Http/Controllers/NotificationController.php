@@ -9,7 +9,7 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = Notification::with('client', 'event')
+        $notifications = Notification::with('client', 'event', 'interactions')
             ->latest()
             ->paginate(30);
 

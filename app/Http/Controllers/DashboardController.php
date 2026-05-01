@@ -33,7 +33,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * "Update Alerts" manual trigger — returns JSON for AJAX call.
+     * "Update Alerts" manual trigger — returns JSON with refreshed partial HTML.
      */
     public function updateAlerts()
     {
@@ -41,12 +41,21 @@ class DashboardController extends Controller
 
         $unreadCount = Notification::where('is_read', false)->count();
 
+        $recentNotifications = Notification::with('client', 'event')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $html = view('partials.recent_notifications', compact('recentNotifications'))->render();
+
         return response()->json([
             'created'      => $created,
             'unread_count' => $unreadCount,
+            'unread_stat'  => $unreadCount,
             'message'      => $created > 0
                 ? "{$created} new alert(s) created."
                 : 'All alerts are up to date.',
+            'html'         => $html,
         ]);
     }
 }
