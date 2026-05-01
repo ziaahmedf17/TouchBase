@@ -2,6 +2,7 @@
 @section('title', 'Roles')
 
 @section('content')
+@include('partials.admin_nav')
 <div class="page-header">
   <h1 class="page-title">Roles</h1>
   <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">+ New Role</a>

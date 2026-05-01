@@ -2,6 +2,7 @@
 @section('title', 'Permissions')
 
 @section('content')
+@include('partials.admin_nav')
 <div class="page-header">
   <h1 class="page-title">Permissions</h1>
   <a href="{{ route('admin.permissions.create') }}" class="btn btn-primary">+ New Permission</a>

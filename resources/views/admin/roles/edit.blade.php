@@ -2,6 +2,7 @@
 @section('title', 'Edit Role')
 
 @section('content')
+@include('partials.admin_nav')
 <div class="page-header">
   <h1 class="page-title">Edit Role: {{ $role->name }}</h1>
   <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">&#8592; Back</a>
