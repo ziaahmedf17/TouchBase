@@ -10,11 +10,13 @@ class EventController extends Controller
 {
     public function create(Client $client)
     {
+        $this->authorize('events.create');
         return view('events.create', compact('client'));
     }
 
     public function store(Request $request, Client $client)
     {
+        $this->authorize('events.create');
         $data = $request->validate([
             'type'          => 'required|in:birthday,anniversary,visit,custom',
             'label'         => 'nullable|string|max:100',
@@ -39,6 +41,7 @@ class EventController extends Controller
 
     public function edit(Client $client, Event $event)
     {
+        $this->authorize('events.edit');
         abort_if($event->client_id !== $client->id, 404);
 
         return view('events.edit', compact('client', 'event'));
@@ -46,6 +49,7 @@ class EventController extends Controller
 
     public function update(Request $request, Client $client, Event $event)
     {
+        $this->authorize('events.edit');
         abort_if($event->client_id !== $client->id, 404);
 
         $data = $request->validate([
@@ -71,6 +75,7 @@ class EventController extends Controller
 
     public function destroy(Client $client, Event $event)
     {
+        $this->authorize('events.delete');
         abort_if($event->client_id !== $client->id, 404);
         $event->delete();
 

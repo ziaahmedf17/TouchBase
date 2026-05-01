@@ -21,12 +21,16 @@
       <a href="{{ $client->whatsappUrl() }}" target="_blank" class="btn btn-primary btn-sm">&#128172; WA</a>
       <button class="btn btn-secondary btn-sm" data-copy="{{ $client->phone }}">Copy #</button>
     @endif
+    @can('interactions.create')
     <button class="btn btn-secondary btn-sm"
             data-open-log
             data-client-id="{{ $client->id }}">
       + Log
     </button>
+    @endcan
+    @can('clients.edit')
     <a href="{{ route('clients.edit', $client) }}" class="btn btn-secondary btn-sm">Edit</a>
+    @endcan
   </div>
 </div>
 
@@ -73,11 +77,13 @@
         <span class="text-muted" style="font-size:.8rem;font-weight:400;margin-left:.4rem;">({{ $client->interactions->count() }})</span>
       @endif
     </div>
+    @can('interactions.create')
     <button class="btn btn-sm btn-primary"
             data-open-log
             data-client-id="{{ $client->id }}">
       + Log Interaction
     </button>
+    @endcan
   </div>
 
   @if($client->interactions->isEmpty())
@@ -134,6 +140,7 @@
           </td>
           <td data-label="Actions">
             <div class="d-flex gap-2">
+              @can('interactions.create')
               <button class="btn btn-sm btn-secondary"
                       data-open-response
                       data-interaction-id="{{ $ix->id }}"
@@ -142,11 +149,14 @@
                       data-response-at="{{ $ix->response_at ? $ix->response_at->format('Y-m-d\TH:i') : '' }}">
                 Update
               </button>
+              @endcan
+              @can('interactions.delete')
               <form method="POST" action="{{ route('interactions.destroy', $ix) }}"
                     data-confirm="Delete this interaction?">
                 @csrf @method('DELETE')
                 <button class="btn btn-sm btn-danger">Del</button>
               </form>
+              @endcan
             </div>
           </td>
         </tr>
@@ -161,12 +171,12 @@
 <div class="card mt-3">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
     <div class="card-title" style="margin:0;">Life Events</div>
-    <a href="{{ route('clients.events.create', $client) }}" class="btn btn-sm btn-primary">+ Add Event</a>
+    @can('events.create')<a href="{{ route('clients.events.create', $client) }}" class="btn btn-sm btn-primary">+ Add Event</a>@endcan
   </div>
 
   @if($client->events->isEmpty())
     <div class="empty-state" style="padding:1.5rem;">
-      <p>No events yet. <a href="{{ route('clients.events.create', $client) }}">Add one</a>.</p>
+      <p>No events yet. @can('events.create')<a href="{{ route('clients.events.create', $client) }}">Add one</a>.@endcan</p>
     </div>
   @else
   <div class="table-wrap">
@@ -189,12 +199,16 @@
           <td data-label="Remind">{{ implode(', ', $event->reminder_days ?? []) ?: '—' }}</td>
           <td data-label="Actions">
             <div class="d-flex gap-2">
+              @can('events.edit')
               <a href="{{ route('clients.events.edit', [$client, $event]) }}" class="btn btn-sm btn-primary">Edit</a>
+              @endcan
+              @can('events.delete')
               <form method="POST" action="{{ route('clients.events.destroy', [$client, $event]) }}"
                     data-confirm="Delete this event and all its alerts?">
                 @csrf @method('DELETE')
                 <button class="btn btn-sm btn-danger">Del</button>
               </form>
+              @endcan
             </div>
           </td>
         </tr>
@@ -205,6 +219,7 @@
   @endif
 </div>
 
+@can('clients.delete')
 <div class="mt-3">
   <form method="POST" action="{{ route('clients.destroy', $client) }}"
         data-confirm="Permanently delete {{ $client->name }} and all their data?">
@@ -212,6 +227,7 @@
     <button class="btn btn-danger btn-sm">Delete Client</button>
   </form>
 </div>
+@endcan
 
 @include('partials.interaction_modals')
 @endsection

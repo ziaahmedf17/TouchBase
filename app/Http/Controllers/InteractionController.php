@@ -9,6 +9,7 @@ class InteractionController extends Controller
 {
     public function store(Request $request)
     {
+        $this->authorize('interactions.create');
         $data = $request->validate([
             'client_id'       => 'required|exists:clients,id',
             'notification_id' => 'nullable|exists:notifications,id',
@@ -25,6 +26,7 @@ class InteractionController extends Controller
 
     public function update(Request $request, Interaction $interaction)
     {
+        $this->authorize('interactions.create');
         $data = $request->validate([
             'status'         => 'required|in:reached_out,no_response,responded,follow_up_needed',
             'response_notes' => 'nullable|string|max:2000',
@@ -38,6 +40,7 @@ class InteractionController extends Controller
 
     public function destroy(Interaction $interaction)
     {
+        $this->authorize('interactions.delete');
         $interaction->delete();
 
         return back()->with('success', 'Interaction deleted.');

@@ -4,7 +4,7 @@
 @section('content')
 <div class="page-header">
   <h1 class="page-title">Clients</h1>
-  <a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>
+  @can('clients.create')<a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>@endcan
 </div>
 
 {{-- Search --}}
@@ -19,7 +19,7 @@
 @if($clients->isEmpty())
   <div class="empty-state">
     <div class="icon">&#128101;</div>
-    <p>No clients found. <a href="{{ route('clients.create') }}">Add your first client</a>.</p>
+    <p>No clients found. @can('clients.create')<a href="{{ route('clients.create') }}">Add your first client</a>.@endcan</p>
   </div>
 @else
 <div class="card" style="padding:0;">
@@ -68,12 +68,16 @@
           <td>
             <div class="d-flex gap-2">
               <a href="{{ route('clients.show', $client) }}" class="btn btn-sm btn-secondary">View</a>
+              @can('clients.edit')
               <a href="{{ route('clients.edit', $client) }}" class="btn btn-sm btn-primary">Edit</a>
+              @endcan
+              @can('clients.delete')
               <form method="POST" action="{{ route('clients.destroy', $client) }}"
                     data-confirm="Delete {{ $client->name }}? All their events and alerts will also be removed.">
                 @csrf @method('DELETE')
                 <button class="btn btn-sm btn-danger">Del</button>
               </form>
+              @endcan
             </div>
           </td>
         </tr>

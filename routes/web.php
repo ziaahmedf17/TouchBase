@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -64,6 +65,7 @@ Route::middleware('auth')->group(function () {
 
     // ── Admin: Roles & Permissions ────────────────────────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users',       UserController::class);
         Route::resource('roles',       RoleController::class);
         Route::resource('permissions', PermissionController::class);
     });

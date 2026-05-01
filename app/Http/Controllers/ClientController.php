@@ -10,6 +10,7 @@ class ClientController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('clients.view');
         $query = Client::withCount('events', 'notifications');
 
         if ($search = $request->input('search')) {
@@ -26,11 +27,13 @@ class ClientController extends Controller
 
     public function create()
     {
+        $this->authorize('clients.create');
         return view('clients.create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('clients.create');
         $data = $request->validate([
             'name'               => 'required|string|max:255',
             'phone'              => 'nullable|string|max:30',
@@ -70,6 +73,7 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
+        $this->authorize('clients.view');
         $client->load([
             'events',
             'notifications' => function ($q) {
@@ -85,11 +89,13 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
+        $this->authorize('clients.edit');
         return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
+        $this->authorize('clients.edit');
         $data = $request->validate([
             'name'               => 'required|string|max:255',
             'phone'              => 'nullable|string|max:30',
@@ -111,6 +117,7 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
+        $this->authorize('clients.delete');
         $client->delete();
 
         return redirect()->route('clients.index')

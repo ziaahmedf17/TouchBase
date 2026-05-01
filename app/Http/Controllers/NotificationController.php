@@ -9,6 +9,7 @@ class NotificationController extends Controller
 {
     public function index()
     {
+        $this->authorize('notifications.view');
         $notifications = Notification::with('client', 'event', 'interactions')
             ->latest()
             ->paginate(30);
@@ -18,6 +19,7 @@ class NotificationController extends Controller
 
     public function markRead(Notification $notification)
     {
+        $this->authorize('notifications.manage');
         $notification->update(['is_read' => true]);
 
         return response()->json(['ok' => true]);
@@ -25,6 +27,7 @@ class NotificationController extends Controller
 
     public function markAllRead()
     {
+        $this->authorize('notifications.manage');
         Notification::where('is_read', false)->update(['is_read' => true]);
 
         return redirect()->back()->with('success', 'All notifications marked as read.');
@@ -40,6 +43,7 @@ class NotificationController extends Controller
 
     public function destroy(Notification $notification)
     {
+        $this->authorize('notifications.manage');
         $notification->delete();
 
         return response()->json(['ok' => true]);
