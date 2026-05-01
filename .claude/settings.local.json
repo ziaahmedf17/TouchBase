@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version)",
+      "Bash(composer --version)",
+      "Bash(php -v)",
+      "Bash(composer -v)",
+      "Bash(mysql --version)",
+      "Bash(where php *)",
+      "Bash(where composer *)",
+      "Bash(dir C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\storage *)",
+      "Bash(php artisan *)",
+      "Read(//usr/**)",
+      "Read(//usr/local/**)",
+      "Bash(cmd.exe /c \"where php\")",
+      "Bash(cmd.exe *)",
+      "PowerShell(Get-Command *)",
+      "Bash(gh auth *)",
+      "PowerShell(gh auth *)"
+    ]
+  }
+}
