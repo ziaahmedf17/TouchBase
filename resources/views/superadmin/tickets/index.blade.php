@@ -9,8 +9,35 @@
 </div>
 
 @if(session('success'))
-  <div class="alert alert-success">{{ session('success') }}</div>
+  <div class="alert alert-success" data-auto-dismiss>{{ session('success') }}</div>
 @endif
+
+{{-- Search --}}
+<form method="GET" action="{{ route('superadmin.tickets.index') }}" class="search-bar">
+  <input class="form-control" type="text" name="search"
+         placeholder="Search by ticket #, subject or admin…"
+         value="{{ $search ?? '' }}">
+  @if($status ?? null)<input type="hidden" name="status" value="{{ $status }}">@endif
+  <button class="btn btn-secondary" type="submit">Search</button>
+  @if(($search ?? '') || ($status ?? ''))
+    <a href="{{ route('superadmin.tickets.index') }}" class="btn btn-secondary">Clear</a>
+  @endif
+</form>
+
+{{-- Status filters --}}
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:1rem;">
+  @php $base = array_filter(['search' => $search ?? null]); @endphp
+  <a href="{{ route('superadmin.tickets.index', $base) }}"
+     class="btn btn-sm {{ !($status ?? null) ? 'btn-primary' : 'btn-secondary' }}">All</a>
+  <a href="{{ route('superadmin.tickets.index', array_merge($base, ['status'=>'open'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'open' ? 'btn-danger' : 'btn-secondary' }}">Open</a>
+  <a href="{{ route('superadmin.tickets.index', array_merge($base, ['status'=>'working_on_it'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'working_on_it' ? 'btn-warning' : 'btn-secondary' }}">Working On It</a>
+  <a href="{{ route('superadmin.tickets.index', array_merge($base, ['status'=>'resolved'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'resolved' ? 'btn-primary' : 'btn-secondary' }}">Resolved</a>
+  <a href="{{ route('superadmin.tickets.index', array_merge($base, ['status'=>'closed'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'closed' ? 'btn-secondary' : 'btn-secondary' }}">Closed</a>
+</div>
 
 @if($tickets->isEmpty())
   <div class="empty-state">

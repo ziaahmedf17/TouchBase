@@ -9,15 +9,33 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $submissions = User::with('roles')
-            ->whereHas('roles', fn($q) => $q->where('slug', 'admin'))
-            ->whereNotNull('payment_submitted_at')
-            ->latest('payment_submitted_at')
-            ->paginate(25);
+        $search = $request->input('search');
+        $status = $request->input('status');
 
-        return view('superadmin.payments.index', compact('submissions'));
+        $query = User::with('roles')
+            ->whereHas('roles', fn($q) => $q->where('slug', 'admin'))
+            ->whereNotNull('payment_submitted_at');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        match ($status) {
+            'pending'  => $query->where('account_status', 'payment_submitted'),
+            'active'   => $query->where('account_status', 'active'),
+            'rejected' => $query->where('account_status', 'rejected'),
+            default    => null,
+        };
+
+        $submissions = $query->latest('payment_submitted_at')->paginate(25)->withQueryString();
+
+        return view('superadmin.payments.index', compact('submissions', 'search', 'status'));
     }
 
     public function show(User $admin)

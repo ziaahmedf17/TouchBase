@@ -9,11 +9,48 @@
 </div>
 
 @if(session('success'))
-  <div class="alert alert-success">{{ session('success') }}</div>
+  <div class="alert alert-success" data-auto-dismiss>{{ session('success') }}</div>
 @endif
 @if(session('error'))
-  <div class="alert alert-danger">{{ session('error') }}</div>
+  <div class="alert alert-danger" data-auto-dismiss>{{ session('error') }}</div>
 @endif
+
+{{-- Search --}}
+<form method="GET" action="{{ route('superadmin.admins.index') }}" class="search-bar">
+  <input class="form-control" type="text" name="search"
+         placeholder="Search by name, email or phone…"
+         value="{{ $search ?? '' }}">
+  @if($status ?? null)<input type="hidden" name="status" value="{{ $status }}">@endif
+  @if($plan ?? null)<input type="hidden" name="plan" value="{{ $plan }}">@endif
+  <button class="btn btn-secondary" type="submit">Search</button>
+  @if(($search ?? '') || ($status ?? '') || ($plan ?? ''))
+    <a href="{{ route('superadmin.admins.index') }}" class="btn btn-secondary">Clear</a>
+  @endif
+</form>
+
+{{-- Status filters --}}
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:.5rem;">
+  @php $base = array_filter(['search' => $search ?? null, 'plan' => $plan ?? null]); @endphp
+  <a href="{{ route('superadmin.admins.index', $base) }}"
+     class="btn btn-sm {{ !($status ?? null) ? 'btn-primary' : 'btn-secondary' }}">All</a>
+  <a href="{{ route('superadmin.admins.index', array_merge($base, ['status'=>'active'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'active' ? 'btn-primary' : 'btn-secondary' }}">Active</a>
+  <a href="{{ route('superadmin.admins.index', array_merge($base, ['status'=>'pending'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'pending' ? 'btn-warning' : 'btn-secondary' }}">Pending</a>
+  <a href="{{ route('superadmin.admins.index', array_merge($base, ['status'=>'suspended'])) }}"
+     class="btn btn-sm {{ ($status ?? null) === 'suspended' ? 'btn-danger' : 'btn-secondary' }}">Suspended</a>
+</div>
+
+{{-- Plan filters --}}
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:1rem;">
+  @php $base2 = array_filter(['search' => $search ?? null, 'status' => $status ?? null]); @endphp
+  <a href="{{ route('superadmin.admins.index', $base2) }}"
+     class="btn btn-sm {{ !($plan ?? null) ? 'btn-primary' : 'btn-secondary' }}">All Plans</a>
+  @foreach(['monthly' => 'Monthly', 'yearly' => 'Yearly', 'lifetime' => 'Lifetime', 'none' => 'No Plan'] as $val => $label)
+  <a href="{{ route('superadmin.admins.index', array_merge($base2, ['plan'=>$val])) }}"
+     class="btn btn-sm {{ ($plan ?? null) === $val ? 'btn-primary' : 'btn-secondary' }}">{{ $label }}</a>
+  @endforeach
+</div>
 
 @if($admins->isEmpty())
   <div class="empty-state">

@@ -11,15 +11,40 @@ use Illuminate\Validation\Rules\Password;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $admins = User::with('roles')
-            ->withCount(['subUsers', 'clients'])
-            ->whereHas('roles', fn($q) => $q->where('slug', 'admin'))
-            ->latest()
-            ->paginate(20);
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $plan   = $request->input('plan');
 
-        return view('superadmin.admins.index', compact('admins'));
+        $query = User::with('roles')
+            ->withCount(['subUsers', 'clients'])
+            ->whereHas('roles', fn($q) => $q->where('slug', 'admin'));
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        match ($status) {
+            'active'    => $query->where('account_status', 'active')->where('is_suspended', false),
+            'pending'   => $query->where('account_status', 'payment_submitted'),
+            'suspended' => $query->where('is_suspended', true),
+            default     => null,
+        };
+
+        if ($plan === 'none') {
+            $query->whereNull('plan_type');
+        } elseif (in_array($plan, ['monthly', 'yearly', 'lifetime'])) {
+            $query->where('plan_type', $plan);
+        }
+
+        $admins = $query->latest()->paginate(20)->withQueryString();
+
+        return view('superadmin.admins.index', compact('admins', 'search', 'status', 'plan'));
     }
 
     public function show(User $admin)
