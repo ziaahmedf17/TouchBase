@@ -21,7 +21,11 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
+
+// ── Public landing page ───────────────────────────────────────────
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 // ── Guest-only routes ─────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -53,7 +57,7 @@ Route::middleware('auth')->group(function () {
     // ── CRM routes (require active account for admins) ────────────
     Route::middleware('account_active')->group(function () {
 
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Profile
         Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
