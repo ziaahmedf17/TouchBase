@@ -101,6 +101,11 @@
           <div style="font-weight:600;font-size:.9rem;">{{ auth()->user()->name }}</div>
           <div style="font-size:.78rem;color:var(--muted);margin-top:.1rem;">{{ auth()->user()->email }}</div>
         </div>
+        @if(!auth()->user()->isSuperAdmin())
+        <a href="{{ route('profile') }}" class="user-dropdown-item">
+          &#128100; My Profile
+        </a>
+        @endif
         <a href="{{ route('password.change') }}" class="user-dropdown-item">
           &#128274; Change Password
         </a>

@@ -19,6 +19,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // ── Guest-only routes ─────────────────────────────────────────────
@@ -52,6 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware('account_active')->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Profile
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/update-alerts', [DashboardController::class, 'updateAlerts'])->name('alerts.update');
 
         // Clients

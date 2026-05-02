@@ -7,14 +7,29 @@
   @can('clients.create')<a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>@endcan
 </div>
 
-{{-- Search --}}
+{{-- Search + filters --}}
 <form method="GET" action="{{ route('clients.index') }}" class="search-bar">
   <input class="form-control" type="text" name="search" placeholder="Search by name or phone…" value="{{ $search ?? '' }}">
+  @if($visit ?? null)
+    <input type="hidden" name="visit" value="{{ $visit }}">
+  @endif
   <button class="btn btn-secondary" type="submit">Search</button>
-  @if($search)
+  @if(($search ?? '') || ($visit ?? ''))
     <a href="{{ route('clients.index') }}" class="btn btn-secondary">Clear</a>
   @endif
 </form>
+
+{{-- Visit filters --}}
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:1rem;">
+  <a href="{{ route('clients.index', array_filter(['search' => $search])) }}"
+     class="btn btn-sm {{ !($visit ?? null) ? 'btn-primary' : 'btn-secondary' }}">All</a>
+  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'week'])) }}"
+     class="btn btn-sm {{ ($visit ?? null) === 'week' ? 'btn-primary' : 'btn-secondary' }}">This Week</a>
+  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'month'])) }}"
+     class="btn btn-sm {{ ($visit ?? null) === 'month' ? 'btn-primary' : 'btn-secondary' }}">This Month</a>
+  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'overdue'])) }}"
+     class="btn btn-sm {{ ($visit ?? null) === 'overdue' ? 'btn-danger' : 'btn-secondary' }}">Overdue</a>
+</div>
 
 @if($clients->isEmpty())
   <div class="empty-state">

@@ -23,18 +23,32 @@ class ClientController extends Controller
     {
         $this->authorize('clients.view');
 
-        $query = $this->tenantQuery()->withCount('events', 'notifications');
+        $query  = $this->tenantQuery()->withCount('events', 'notifications');
+        $search = $request->input('search');
+        $visit  = $request->input('visit');
 
-        if ($search = $request->input('search')) {
+        if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
+        match ($visit) {
+            'week'    => $query->whereNotNull('next_visit_date')
+                               ->whereDate('next_visit_date', '>=', now())
+                               ->whereDate('next_visit_date', '<=', now()->addDays(7)),
+            'month'   => $query->whereNotNull('next_visit_date')
+                               ->whereDate('next_visit_date', '>=', now())
+                               ->whereDate('next_visit_date', '<=', now()->addDays(30)),
+            'overdue' => $query->whereNotNull('next_visit_date')
+                               ->whereDate('next_visit_date', '<', now()),
+            default   => null,
+        };
+
         $clients = $query->orderBy('name')->paginate(20)->withQueryString();
 
-        return view('clients.index', compact('clients', 'search'));
+        return view('clients.index', compact('clients', 'search', 'visit'));
     }
 
     public function create()
