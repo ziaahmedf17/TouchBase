@@ -7,6 +7,7 @@ use App\Http\Controllers\SuperAdmin\AdminController as SuperAdminController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdmin\PaymentAccountController;
 use App\Http\Controllers\SuperAdmin\PaymentController;
+use App\Http\Controllers\SuperAdmin\ActivityController;
 use App\Http\Controllers\SuperAdmin\PlanController;
 use App\Http\Controllers\SuperAdmin\TicketController as SuperAdminTicketController;
 use App\Http\Controllers\Admin\TicketController;
@@ -128,6 +129,9 @@ Route::middleware('auth')->group(function () {
         // Plans (price management)
         Route::get('plans',        [PlanController::class, 'index'])->name('plans.index');
         Route::put('plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
+
+        // Activity log
+        Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
     });
 
 });

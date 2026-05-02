@@ -39,7 +39,51 @@
     <div class="num">{{ $stats['upcoming_visits'] }}</div>
     <div class="label">Visits (next 7 days)</div>
   </div>
+  <div class="stat-card" style="{{ $stats['not_contacted'] > 0 ? 'border-top:3px solid var(--warning);' : '' }}">
+    <div class="num" style="{{ $stats['not_contacted'] > 0 ? 'color:var(--warning);' : '' }}">
+      {{ $stats['not_contacted'] }}
+    </div>
+    <div class="label">Not Contacted (30d)</div>
+  </div>
+  <div class="stat-card" style="{{ $stats['upcoming_events'] > 0 ? 'border-top:3px solid var(--primary);' : '' }}">
+    <div class="num" style="{{ $stats['upcoming_events'] > 0 ? 'color:var(--primary);' : '' }}">
+      {{ $stats['upcoming_events'] }}
+    </div>
+    <div class="label">Birthdays/Anniv. (7d)</div>
+  </div>
 </div>
+
+{{-- ── Upcoming birthdays & anniversaries ───── --}}
+@if($upcomingEvents->isNotEmpty())
+<div class="card" style="margin-bottom:1rem;border-left:4px solid var(--primary);">
+  <div class="card-title">&#127881; Upcoming This Week</div>
+  <div style="display:grid;gap:.4rem;">
+    @foreach($upcomingEvents as $event)
+    @php $next = $event->nextOccurrence(); $daysAway = (int) now()->startOfDay()->diffInDays($next); @endphp
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);">
+      <div>
+        <a href="{{ route('clients.show', $event->client) }}"
+           style="font-weight:600;font-size:.9rem;text-decoration:none;color:var(--text);">
+          {{ $event->client->name }}
+        </a>
+        <span class="badge {{ $event->badgeClass() }}" style="margin-left:.4rem;font-size:.72rem;">
+          {{ $event->typeLabel() }}
+        </span>
+        @if($event->label)
+          <span class="text-muted" style="font-size:.78rem;margin-left:.3rem;">{{ $event->label }}</span>
+        @endif
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:.75rem;">
+        <div style="font-size:.82rem;font-weight:600;color:{{ $daysAway === 0 ? 'var(--danger)' : 'var(--primary)' }};">
+          {{ $daysAway === 0 ? 'Today' : "in {$daysAway}d" }}
+        </div>
+        <div class="text-muted" style="font-size:.72rem;">{{ $next->format('d M') }}</div>
+      </div>
+    </div>
+    @endforeach
+  </div>
+</div>
+@endif
 
 {{-- ── Subscription info (admins only) ─────── --}}
 @if(auth()->user()->isAdmin())
@@ -104,5 +148,10 @@
   @can('clients.create')<a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>@endcan
   <a href="{{ route('calendar.index') }}"  class="btn btn-secondary">&#128197; Calendar</a>
   <a href="{{ route('clients.index') }}"   class="btn btn-secondary">&#128101; All Clients</a>
+  @if($stats['not_contacted'] > 0)
+  <a href="{{ route('clients.index', ['visit' => 'overdue']) }}" class="btn btn-secondary" style="color:var(--warning);">
+    &#9888; {{ $stats['not_contacted'] }} Not Contacted
+  </a>
+  @endif
 </div>
 @endsection

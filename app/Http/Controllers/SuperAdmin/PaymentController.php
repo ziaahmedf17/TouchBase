@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -67,6 +68,12 @@ class PaymentController extends Controller
             'plan_expires_at' => $plan->expiresAt(),
         ]);
 
+        ActivityLog::record(
+            'payment_approved',
+            "Approved payment for \"{$admin->name}\" ({$plan->name} plan).",
+            $admin->id
+        );
+
         return redirect()->route('superadmin.payments.index')
             ->with('success', "Account for \"{$admin->name}\" approved ({$plan->name} plan). Remember to call them on {$admin->phone}.");
     }
@@ -74,6 +81,13 @@ class PaymentController extends Controller
     public function reject(User $admin)
     {
         $admin->update(['account_status' => 'rejected']);
+
+        ActivityLog::record(
+            'payment_rejected',
+            "Rejected payment for \"{$admin->name}\".",
+            $admin->id
+        );
+
         return redirect()->route('superadmin.payments.index')
             ->with('success', "Account for \"{$admin->name}\" rejected.");
     }

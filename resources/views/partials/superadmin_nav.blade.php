@@ -23,4 +23,8 @@
      class="btn btn-sm {{ request()->routeIs('superadmin.plans.*') ? 'btn-primary' : 'btn-secondary' }}">
     &#128176; Plans
   </a>
+  <a href="{{ route('superadmin.activity.index') }}"
+     class="btn btn-sm {{ request()->routeIs('superadmin.activity.*') ? 'btn-primary' : 'btn-secondary' }}">
+    &#128221; Activity
+  </a>
 </div>

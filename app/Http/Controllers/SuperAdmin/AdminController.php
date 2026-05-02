@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Plan;
 use App\Models\Role;
 use App\Models\User;
@@ -124,12 +125,26 @@ class AdminController extends Controller
     public function suspend(User $admin)
     {
         $admin->update(['is_suspended' => true]);
+
+        ActivityLog::record(
+            'admin_suspended',
+            "Suspended account for \"{$admin->name}\" ({$admin->email}).",
+            $admin->id
+        );
+
         return back()->with('success', "Account for \"{$admin->name}\" has been suspended.");
     }
 
     public function unsuspend(User $admin)
     {
         $admin->update(['is_suspended' => false]);
+
+        ActivityLog::record(
+            'admin_unsuspended',
+            "Reactivated account for \"{$admin->name}\" ({$admin->email}).",
+            $admin->id
+        );
+
         return back()->with('success', "Account for \"{$admin->name}\" has been reactivated.");
     }
 
@@ -146,6 +161,13 @@ class AdminController extends Controller
             'plan_started_at' => now(),
             'plan_expires_at' => $plan->expiresAt(),
         ]);
+
+        $expires = $plan->expiresAt() ? $plan->expiresAt()->format('d M Y') : 'never';
+        ActivityLog::record(
+            'plan_set',
+            "Set {$plan->name} plan for \"{$admin->name}\" (expires {$expires}).",
+            $admin->id
+        );
 
         return back()->with('success', "Plan updated to {$plan->name} for \"{$admin->name}\".");
     }
