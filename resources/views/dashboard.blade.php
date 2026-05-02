@@ -35,7 +35,7 @@
 
 {{-- ── Quick actions ────────────────────────── --}}
 <div class="d-flex gap-2 mt-3" style="flex-wrap:wrap;">
-  <a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>
+  @can('clients.create')<a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>@endcan
   <a href="{{ route('calendar.index') }}"  class="btn btn-secondary">&#128197; Calendar</a>
   <a href="{{ route('clients.index') }}"   class="btn btn-secondary">&#128101; All Clients</a>
 </div>

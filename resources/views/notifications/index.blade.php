@@ -5,10 +5,12 @@
 <div class="page-header">
   <h1 class="page-title">All Alerts</h1>
   <div class="d-flex gap-2">
+    @can('notifications.manage')
     <form method="POST" action="{{ route('notifications.readAll') }}">
       @csrf
       <button class="btn btn-secondary btn-sm">Mark All Read</button>
     </form>
+    @endcan
   </div>
 </div>
 
@@ -65,6 +67,7 @@
               @if($count > 0)
                 <span class="badge badge-responded" style="margin-bottom:.3rem;">{{ $count }} logged</span>
               @endif
+              @can('interactions.create')
               @if($n->client)
               <button class="btn btn-sm btn-secondary"
                       data-open-log
@@ -73,14 +76,17 @@
                 + Log
               </button>
               @endif
+              @endcan
             </div>
           </td>
           <td data-label="Actions">
             <div class="d-flex gap-2">
+              @can('notifications.manage')
               @if(!$n->is_read)
                 <button class="btn btn-sm btn-secondary" data-mark-read="{{ $n->id }}">Read</button>
               @endif
               <button class="btn btn-sm btn-danger" data-delete-notif="{{ $n->id }}">Delete</button>
+              @endcan
             </div>
           </td>
         </tr>
