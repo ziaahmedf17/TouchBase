@@ -18,14 +18,28 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|email|max:255|unique:users',
+            'phone'                => 'required|string|max:20',
+            'business_type'        => 'required|string',
+            'custom_business_type' => 'required_if:business_type,others|nullable|string|max:100',
+            'business_description' => 'required|string|max:500',
+            'password'             => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create($data);
+        $businessType = $data['business_type'] === 'others'
+            ? $data['custom_business_type']
+            : $data['business_type'];
 
-        // Self-registration creates an admin (their own tenant)
+        $user = User::create([
+            'name'                 => $data['name'],
+            'email'                => $data['email'],
+            'phone'                => $data['phone'],
+            'business_type'        => $businessType,
+            'business_description' => $data['business_description'],
+            'password'             => $data['password'],
+        ]);
+
         $defaultRole = Role::where('slug', 'admin')->first();
         if ($defaultRole) {
             $user->assignRole($defaultRole);

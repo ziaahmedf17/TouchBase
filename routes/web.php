@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
     // ── Super Admin ───────────────────────────────────────────────
     Route::middleware('role:super_admin')->prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('admins', SuperAdminController::class)->except(['show']);
+        Route::resource('admins', SuperAdminController::class);
         Route::get('admins/{admin}/clients', [SuperAdminController::class, 'clients'])->name('admins.clients');
         Route::get('tickets',              [SuperAdminTicketController::class, 'index'])->name('tickets.index');
         Route::get('tickets/{ticket}',     [SuperAdminTicketController::class, 'show'])->name('tickets.show');

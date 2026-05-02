@@ -37,8 +37,20 @@
       <tbody>
         @foreach($admins as $admin)
         <tr>
-          <td style="font-weight:600;">{{ $admin->name }}</td>
-          <td>{{ $admin->email }}</td>
+          <td>
+            <a href="{{ route('superadmin.admins.show', $admin) }}" style="font-weight:600;text-decoration:none;color:var(--text);">
+              {{ $admin->name }}
+            </a>
+            @if($admin->business_type)
+              <div class="text-muted" style="font-size:.78rem;">{{ $admin->business_type }}</div>
+            @endif
+          </td>
+          <td>
+            <div>{{ $admin->email }}</div>
+            @if($admin->phone)
+              <div class="text-muted" style="font-size:.78rem;">{{ $admin->phone }}</div>
+            @endif
+          </td>
           <td>{{ $admin->sub_users_count }}</td>
           <td>
             <a href="{{ route('superadmin.admins.clients', $admin) }}">
@@ -48,7 +60,7 @@
           <td>{{ $admin->created_at->format('d M Y') }}</td>
           <td>
             <div class="d-flex gap-2">
-              <a href="{{ route('superadmin.admins.clients', $admin) }}" class="btn btn-sm btn-secondary">View</a>
+              <a href="{{ route('superadmin.admins.show', $admin) }}" class="btn btn-sm btn-secondary">View</a>
               <a href="{{ route('superadmin.admins.edit', $admin) }}" class="btn btn-sm btn-primary">Edit</a>
               <form method="POST" action="{{ route('superadmin.admins.destroy', $admin) }}"
                     data-confirm="Delete admin &quot;{{ $admin->name }}&quot;? This permanently deletes all their clients, sub-users, and data.">

@@ -21,6 +21,15 @@ class AdminController extends Controller
         return view('superadmin.admins.index', compact('admins'));
     }
 
+    public function show(User $admin)
+    {
+        $admin->loadCount(['subUsers', 'clients']);
+        $admin->load('subUsers.roles');
+        $recentClients = $admin->clients()->latest()->take(5)->get();
+        $tickets = \App\Models\Ticket::where('user_id', $admin->id)->latest()->take(5)->get();
+        return view('superadmin.admins.show', compact('admin', 'recentClients', 'tickets'));
+    }
+
     public function create()
     {
         return view('superadmin.admins.create');
