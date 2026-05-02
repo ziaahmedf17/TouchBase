@@ -8,6 +8,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardCo
 use App\Http\Controllers\SuperAdmin\PaymentAccountController;
 use App\Http\Controllers\SuperAdmin\PaymentController;
 use App\Http\Controllers\SuperAdmin\ActivityController;
+use App\Http\Controllers\SuperAdmin\CacheController;
 use App\Http\Controllers\SuperAdmin\PlanController;
 use App\Http\Controllers\SuperAdmin\TicketController as SuperAdminTicketController;
 use App\Http\Controllers\Admin\TicketController;
@@ -136,6 +137,9 @@ Route::middleware('auth')->group(function () {
 
         // Activity log
         Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
+
+        // Cache management
+        Route::post('cache/clear', [CacheController::class, 'clear'])->name('cache.clear');
     });
 
 });

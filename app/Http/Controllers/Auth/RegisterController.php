@@ -97,6 +97,9 @@ class RegisterController extends Controller
     public function showPending()
     {
         $user = Auth::user();
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('superadmin.dashboard');
+        }
         if ($user && $user->account_status === 'active') {
             return redirect()->route('dashboard');
         }

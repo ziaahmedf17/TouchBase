@@ -169,6 +169,21 @@
 
 </div>
 
+{{-- ── Tools ───────────────────────────────── --}}
+<div class="card" style="margin-bottom:1.25rem;">
+  <div class="card-title">System Tools</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
+    <div>
+      <div style="font-size:.9rem;font-weight:600;">Clear Cache</div>
+      <div class="text-muted" style="font-size:.8rem;">Clears config, route, view, and application cache. Use after deploying updates.</div>
+    </div>
+    <form method="POST" action="{{ route('superadmin.cache.clear') }}">
+      @csrf
+      <button type="submit" class="btn btn-secondary">&#128465; Clear Cache</button>
+    </form>
+  </div>
+</div>
+
 {{-- ── Recent admins + pending tickets ────── --}}
 <div class="grid-2col">
 

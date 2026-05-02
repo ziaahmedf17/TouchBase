@@ -19,13 +19,12 @@
 <h2 class="auth-title">Complete Payment</h2>
 <p class="auth-subtitle">Transfer the subscription fee and upload your payment screenshot</p>
 
+{{-- Payment account cards --}}
 @if($accounts->isEmpty())
-  <div class="alert alert-info">
-    Payment account details are being set up. Please contact support to complete your registration.
+  <div class="alert alert-info" style="margin-bottom:1.5rem;">
+    Payment account details are being set up. Transfer details will be shared with you shortly — you may still select a plan and upload your screenshot now.
   </div>
 @else
-
-{{-- Payment account cards --}}
 <div style="display:grid;gap:.75rem;margin-bottom:1.5rem;">
   @foreach($accounts as $account)
   <div class="card" style="padding:1rem 1.1rem;">
@@ -68,6 +67,7 @@
   </div>
   @endforeach
 </div>
+@endif
 
 {{-- Upload screenshot --}}
 <form method="POST" action="{{ route('register.payment.store') }}" enctype="multipart/form-data">
@@ -123,8 +123,6 @@
     Submit Payment Screenshot
   </button>
 </form>
-
-@endif
 
 <p style="text-align:center;margin-top:1.25rem;font-size:.82rem;color:var(--muted);">
   Wrong account? <a href="{{ route('register') }}">Go back</a>
