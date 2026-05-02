@@ -11,4 +11,8 @@
      class="btn btn-sm {{ request()->routeIs('admin.permissions.*') ? 'btn-primary' : 'btn-secondary' }}">
     &#128274; Permissions
   </a>
+  <a href="{{ route('admin.tickets.index') }}"
+     class="btn btn-sm {{ request()->routeIs('admin.tickets.*') ? 'btn-primary' : 'btn-secondary' }}">
+    &#127915; Support
+  </a>
 </div>

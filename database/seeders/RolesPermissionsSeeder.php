@@ -42,6 +42,12 @@ class RolesPermissionsSeeder extends Seeder
         }
 
         // ── Roles ─────────────────────────────────────────────────
+        $superAdmin = Role::firstOrCreate(
+            ['slug' => 'super_admin'],
+            ['name' => 'Super Admin', 'description' => 'Full platform access — manages all admins and tenants']
+        );
+        $superAdmin->permissions()->sync(Permission::pluck('id'));
+
         $admin = Role::firstOrCreate(
             ['slug' => 'admin'],
             ['name' => 'Admin', 'description' => 'Full access to everything']

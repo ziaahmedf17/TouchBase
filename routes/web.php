@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\SuperAdmin\AdminController as SuperAdminController;
+use App\Http\Controllers\SuperAdmin\TicketController as SuperAdminTicketController;
+use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -63,10 +66,21 @@ Route::middleware('auth')->group(function () {
     // Calendar
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
-    // ── Admin: Roles & Permissions ────────────────────────────────
+    // ── Super Admin ───────────────────────────────────────────────
+    Route::middleware('role:super_admin')->prefix('superadmin')->name('superadmin.')->group(function () {
+        Route::resource('admins', SuperAdminController::class)->except(['show']);
+        Route::get('admins/{admin}/clients', [SuperAdminController::class, 'clients'])->name('admins.clients');
+        Route::get('tickets', [SuperAdminTicketController::class, 'index'])->name('tickets.index');
+        Route::put('tickets/{ticket}', [SuperAdminTicketController::class, 'update'])->name('tickets.update');
+    });
+
+    // ── Admin: Users, Roles, Permissions & Tickets ───────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users',       UserController::class);
         Route::resource('roles',       RoleController::class);
         Route::resource('permissions', PermissionController::class);
+        Route::get('tickets',          [TicketController::class, 'index'])->name('tickets.index');
+        Route::get('tickets/create',   [TicketController::class, 'create'])->name('tickets.create');
+        Route::post('tickets',         [TicketController::class, 'store'])->name('tickets.store');
     });
 });

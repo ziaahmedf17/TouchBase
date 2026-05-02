@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Notification;
 use App\Services\ReminderService;
 use Illuminate\Http\Request;
@@ -12,39 +13,40 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Auto-check on every dashboard load
         $this->reminders->checkAndCreateNotifications();
 
+        $tenantId = auth()->user()->tenantId();
+
+        $clientQuery = $tenantId ? Client::where('tenant_id', $tenantId) : Client::query();
+        $notifQuery  = $this->notifQuery($tenantId);
+
         $stats = [
-            'total_clients'        => \App\Models\Client::count(),
-            'unread_notifications' => Notification::where('is_read', false)->count(),
-            'upcoming_visits'      => \App\Models\Client::whereNotNull('next_visit_date')
+            'total_clients'        => (clone $clientQuery)->count(),
+            'unread_notifications' => (clone $notifQuery)->where('is_read', false)->count(),
+            'upcoming_visits'      => (clone $clientQuery)
+                ->whereNotNull('next_visit_date')
                 ->whereDate('next_visit_date', '>=', now())
                 ->whereDate('next_visit_date', '<=', now()->addDays(7))
                 ->count(),
         ];
 
-        $recentNotifications = Notification::with('client', 'event')
-            ->latest()
-            ->take(5)
-            ->get();
+        $recentNotifications = (clone $notifQuery)->with('client', 'event')
+            ->latest()->take(5)->get();
 
         return view('dashboard', compact('stats', 'recentNotifications'));
     }
 
-    /**
-     * "Update Alerts" manual trigger — returns JSON with refreshed partial HTML.
-     */
     public function updateAlerts()
     {
         $created = $this->reminders->checkAndCreateNotifications();
 
-        $unreadCount = Notification::where('is_read', false)->count();
+        $tenantId    = auth()->user()->tenantId();
+        $notifQuery  = $this->notifQuery($tenantId);
 
-        $recentNotifications = Notification::with('client', 'event')
-            ->latest()
-            ->take(5)
-            ->get();
+        $unreadCount = (clone $notifQuery)->where('is_read', false)->count();
+
+        $recentNotifications = (clone $notifQuery)->with('client', 'event')
+            ->latest()->take(5)->get();
 
         $html = view('partials.recent_notifications', compact('recentNotifications'))->render();
 
@@ -57,5 +59,14 @@ class DashboardController extends Controller
                 : 'All alerts are up to date.',
             'html'         => $html,
         ]);
+    }
+
+    private function notifQuery(?int $tenantId)
+    {
+        $q = Notification::query();
+        if ($tenantId) {
+            $q->whereHas('client', fn($c) => $c->where('tenant_id', $tenantId));
+        }
+        return $q;
     }
 }

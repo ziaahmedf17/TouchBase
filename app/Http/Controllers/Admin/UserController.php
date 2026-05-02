@@ -13,13 +13,17 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->latest()->paginate(20);
+        $users = User::with('roles')
+            ->where('tenant_id', Auth::id())
+            ->latest()
+            ->paginate(20);
+
         return view('admin.users.index', compact('users'));
     }
 
     public function create()
     {
-        $roles = Role::orderBy('name')->get();
+        $roles = Role::whereNotIn('slug', ['super_admin', 'admin'])->orderBy('name')->get();
         return view('admin.users.create', compact('roles'));
     }
 
@@ -32,13 +36,16 @@ class UserController extends Controller
             'role'     => 'required|exists:roles,id',
         ]);
 
+        $role = Role::find($data['role']);
+
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => $data['password'],
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'password'  => $data['password'],
+            'tenant_id' => Auth::id(),
         ]);
 
-        $user->assignRole(Role::find($data['role']));
+        $user->assignRole($role);
 
         return redirect()->route('admin.users.index')
             ->with('success', "User \"{$user->name}\" created.");
@@ -46,13 +53,16 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Role::orderBy('name')->get();
+        $this->authorizeUser($user);
+        $roles = Role::whereNotIn('slug', ['super_admin', 'admin'])->orderBy('name')->get();
         $currentRole = $user->roles->first();
         return view('admin.users.edit', compact('user', 'roles', 'currentRole'));
     }
 
     public function update(Request $request, User $user)
     {
+        $this->authorizeUser($user);
+
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -74,6 +84,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorizeUser($user);
+
         if ($user->id === Auth::id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
@@ -84,5 +96,12 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', "User \"{$name}\" deleted.");
+    }
+
+    private function authorizeUser(User $user): void
+    {
+        if ($user->tenant_id !== Auth::id()) {
+            abort(403);
+        }
     }
 }

@@ -4,14 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\Event;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
+    private function tenantQuery(): Builder
+    {
+        $q = Client::query();
+        $tenantId = auth()->user()->tenantId();
+        if ($tenantId) {
+            $q->where('tenant_id', $tenantId);
+        }
+        return $q;
+    }
+
     public function index(Request $request)
     {
         $this->authorize('clients.view');
-        $query = Client::withCount('events', 'notifications');
+
+        $query = $this->tenantQuery()->withCount('events', 'notifications');
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -46,6 +58,7 @@ class ClientController extends Controller
         $data['visit_reminder_days'] = $this->parseReminderDays(
             $request->input('visit_reminder_days', '')
         );
+        $data['tenant_id'] = auth()->user()->tenantId();
 
         $client = Client::create($data);
 
@@ -74,6 +87,8 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         $this->authorize('clients.view');
+        $this->authorizeTenant($client);
+
         $client->load([
             'events',
             'notifications' => function ($q) {
@@ -90,12 +105,15 @@ class ClientController extends Controller
     public function edit(Client $client)
     {
         $this->authorize('clients.edit');
+        $this->authorizeTenant($client);
         return view('clients.edit', compact('client'));
     }
 
     public function update(Request $request, Client $client)
     {
         $this->authorize('clients.edit');
+        $this->authorizeTenant($client);
+
         $data = $request->validate([
             'name'               => 'required|string|max:255',
             'phone'              => 'nullable|string|max:30',
@@ -118,13 +136,21 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         $this->authorize('clients.delete');
+        $this->authorizeTenant($client);
         $client->delete();
 
         return redirect()->route('clients.index')
             ->with('success', 'Client removed.');
     }
 
-    /** Parse "1,2,7" or "1 2 7" into [1, 2, 7] */
+    private function authorizeTenant(Client $client): void
+    {
+        $tenantId = auth()->user()->tenantId();
+        if ($tenantId && $client->tenant_id !== $tenantId) {
+            abort(403);
+        }
+    }
+
     private function parseReminderDays(string $input): array
     {
         if (empty(trim($input))) {

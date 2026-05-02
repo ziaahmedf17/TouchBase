@@ -29,7 +29,12 @@ class CalendarController extends Controller
         // Build a map: day_number => [events]
         $calendarData = [];
 
-        $events = Event::with('client')->get();
+        $tenantId = auth()->user()->tenantId();
+        $eventsQuery = Event::with('client');
+        if ($tenantId) {
+            $eventsQuery->whereHas('client', fn($q) => $q->where('tenant_id', $tenantId));
+        }
+        $events = $eventsQuery->get();
 
         foreach ($events as $event) {
             $days = $this->getEventDaysInMonth($event, $year, $month);

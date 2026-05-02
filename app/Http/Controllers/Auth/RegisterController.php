@@ -25,8 +25,8 @@ class RegisterController extends Controller
 
         $user = User::create($data);
 
-        // Assign default role if it exists (seeded via RolesPermissionsSeeder)
-        $defaultRole = Role::where('slug', 'user')->first();
+        // Self-registration creates an admin (their own tenant)
+        $defaultRole = Role::where('slug', 'admin')->first();
         if ($defaultRole) {
             $user->assignRole($defaultRole);
         }

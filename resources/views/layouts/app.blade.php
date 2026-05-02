@@ -21,8 +21,10 @@
     <a href="{{ route('calendar.index') }}" class="{{ request()->routeIs('calendar.*')      ? 'active' : '' }}"><span>Calendar</span></a>
     <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}"><span>Alerts</span></a>
     @auth
-      @if(auth()->user()->isAdmin())
-        <a href="{{ route('admin.roles.index') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}"><span>Admin</span></a>
+      @if(auth()->user()->isSuperAdmin())
+        <a href="{{ route('superadmin.admins.index') }}" class="{{ request()->routeIs('superadmin.*') ? 'active' : '' }}"><span>Super Admin</span></a>
+      @elseif(auth()->user()->isAdmin())
+        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}"><span>Admin</span></a>
       @endif
     @endauth
   </div>
@@ -44,8 +46,12 @@
         </div>
         <div class="notif-list" id="notif-list-preview">
           @php
-            $previewNotifs = \App\Models\Notification::with('client','event')
-              ->latest()->take(6)->get();
+            $tenantId = auth()->user()->tenantId();
+            $previewQuery = \App\Models\Notification::with('client','event')->latest();
+            if ($tenantId) {
+                $previewQuery->whereHas('client', fn($q) => $q->where('tenant_id', $tenantId));
+            }
+            $previewNotifs = $previewQuery->take(6)->get();
           @endphp
 
           @forelse($previewNotifs as $n)

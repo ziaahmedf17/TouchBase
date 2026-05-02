@@ -1,0 +1,68 @@
+@extends('layouts.app')
+@section('title', 'Admins')
+
+@section('content')
+@include('partials.superadmin_nav')
+<div class="page-header">
+  <h1 class="page-title">Admins</h1>
+  <a href="{{ route('superadmin.admins.create') }}" class="btn btn-primary">+ New Admin</a>
+</div>
+
+@if(session('success'))
+  <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+  <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+@if($admins->isEmpty())
+  <div class="empty-state">
+    <div class="icon">&#127968;</div>
+    <p>No admins yet. <a href="{{ route('superadmin.admins.create') }}">Create the first admin</a>.</p>
+  </div>
+@else
+<div class="card" style="padding:0;">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Sub-Users</th>
+          <th>Clients</th>
+          <th>Joined</th>
+          <th style="width:150px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($admins as $admin)
+        <tr>
+          <td style="font-weight:600;">{{ $admin->name }}</td>
+          <td>{{ $admin->email }}</td>
+          <td>{{ $admin->sub_users_count }}</td>
+          <td>
+            <a href="{{ route('superadmin.admins.clients', $admin) }}">
+              {{ $admin->clients_count }} clients
+            </a>
+          </td>
+          <td>{{ $admin->created_at->format('d M Y') }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{{ route('superadmin.admins.clients', $admin) }}" class="btn btn-sm btn-secondary">View</a>
+              <a href="{{ route('superadmin.admins.edit', $admin) }}" class="btn btn-sm btn-primary">Edit</a>
+              <form method="POST" action="{{ route('superadmin.admins.destroy', $admin) }}"
+                    data-confirm="Delete admin &quot;{{ $admin->name }}&quot;? This permanently deletes all their clients, sub-users, and data.">
+                @csrf @method('DELETE')
+                <button class="btn btn-sm btn-danger">Del</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ $admins->links('partials.pagination') }}
+@endif
+@endsection

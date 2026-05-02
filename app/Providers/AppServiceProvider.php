@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Register Gates for every permission slug so @can / Gate::allows() work in views
         Gate::before(function (User $user) {
-            if ($user->isAdmin()) {
-                return true; // admins pass every gate
+            if ($user->isSuperAdmin() || $user->isAdmin()) {
+                return true;
             }
         });
 
