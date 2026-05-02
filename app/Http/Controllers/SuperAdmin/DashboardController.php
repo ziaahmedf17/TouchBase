@@ -45,6 +45,17 @@ class DashboardController extends Controller
             ->orderBy('plan_expires_at')
             ->get(['id', 'name', 'email', 'phone', 'plan_type', 'plan_expires_at']);
 
+        // Admins needing action
+        $pendingApprovals = $adminQuery()
+            ->where('account_status', 'payment_submitted')
+            ->latest('payment_submitted_at')
+            ->get(['id', 'name', 'email', 'phone', 'business_type', 'plan_type', 'payment_submitted_at']);
+
+        $suspendedAdmins = $adminQuery()
+            ->where('is_suspended', true)
+            ->latest()
+            ->get(['id', 'name', 'email', 'phone', 'plan_type', 'plan_expires_at']);
+
         $recentAdmins = $adminQuery()->with('roles')->latest()->take(5)->get();
 
         $recentTickets = Ticket::with('user')
@@ -54,7 +65,9 @@ class DashboardController extends Controller
             ->get();
 
         return view('superadmin.dashboard', compact(
-            'stats', 'plans', 'planCounts', 'upcomingRenewals', 'recentAdmins', 'recentTickets'
+            'stats', 'plans', 'planCounts', 'upcomingRenewals',
+            'pendingApprovals', 'suspendedAdmins',
+            'recentAdmins', 'recentTickets'
         ));
     }
 }

@@ -37,6 +37,79 @@
   </div>
 </div>
 
+{{-- ── Action required ─────────────────────── --}}
+@if($pendingApprovals->isNotEmpty() || $suspendedAdmins->isNotEmpty())
+<div class="grid-2col" style="margin-bottom:1.25rem;">
+
+  {{-- Pending approvals --}}
+  <div class="card" style="border-left:4px solid var(--warning);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+      <div class="card-title" style="margin:0;color:var(--warning);">
+        &#9888; Pending Approvals
+        <span style="font-size:.75rem;font-weight:400;margin-left:.4rem;color:var(--muted);">({{ $pendingApprovals->count() }})</span>
+      </div>
+      <a href="{{ route('superadmin.payments.index', ['status'=>'pending']) }}" style="font-size:.82rem;">View all</a>
+    </div>
+    @forelse($pendingApprovals as $admin)
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:600;font-size:.9rem;">{{ $admin->name }}</div>
+        <div class="text-muted" style="font-size:.75rem;">
+          {{ $admin->email }}
+          @if($admin->phone) &bull; <a href="tel:{{ $admin->phone }}" style="color:inherit;">{{ $admin->phone }}</a> @endif
+        </div>
+        <div class="text-muted" style="font-size:.75rem;">
+          {{ $admin->business_type ?? '—' }}
+          &bull; {{ $admin->planLabel() }}
+          @if($admin->payment_submitted_at) &bull; {{ $admin->payment_submitted_at->diffForHumans() }} @endif
+        </div>
+      </div>
+      <a href="{{ route('superadmin.payments.show', $admin) }}"
+         class="btn btn-sm btn-warning" style="white-space:nowrap;margin-left:.75rem;">Review</a>
+    </div>
+    @empty
+      <p class="text-muted" style="font-size:.85rem;margin:0;">No pending approvals.</p>
+    @endforelse
+  </div>
+
+  {{-- Suspended admins --}}
+  <div class="card" style="border-left:4px solid var(--danger);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+      <div class="card-title" style="margin:0;color:var(--danger);">
+        &#128274; Suspended Admins
+        <span style="font-size:.75rem;font-weight:400;margin-left:.4rem;color:var(--muted);">({{ $suspendedAdmins->count() }})</span>
+      </div>
+      <a href="{{ route('superadmin.admins.index', ['status'=>'suspended']) }}" style="font-size:.82rem;">View all</a>
+    </div>
+    @forelse($suspendedAdmins as $admin)
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:600;font-size:.9rem;">{{ $admin->name }}</div>
+        <div class="text-muted" style="font-size:.75rem;">
+          {{ $admin->email }}
+          @if($admin->phone) &bull; <a href="tel:{{ $admin->phone }}" style="color:inherit;">{{ $admin->phone }}</a> @endif
+        </div>
+        <div class="text-muted" style="font-size:.75rem;">
+          {{ $admin->planLabel() }}
+          @if($admin->plan_expires_at) &bull; expired {{ $admin->plan_expires_at->format('d M Y') }} @endif
+        </div>
+      </div>
+      <div class="d-flex gap-2" style="margin-left:.75rem;">
+        <form method="POST" action="{{ route('superadmin.admins.unsuspend', $admin) }}">
+          @csrf
+          <button type="submit" class="btn btn-sm btn-success" style="white-space:nowrap;">Reactivate</button>
+        </form>
+        <a href="{{ route('superadmin.admins.show', $admin) }}" class="btn btn-sm btn-secondary">View</a>
+      </div>
+    </div>
+    @empty
+      <p class="text-muted" style="font-size:.85rem;margin:0;">No suspended admins.</p>
+    @endforelse
+  </div>
+
+</div>
+@endif
+
 {{-- ── Plan distribution + upcoming renewals ── --}}
 <div class="grid-2col" style="margin-bottom:1.25rem;">
 
