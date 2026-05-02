@@ -43,7 +43,10 @@
       "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" artisan *)",
       "Bash(C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe -r 'require '\\\\''vendor/autoload.php'\\\\''; $app = require '\\\\''bootstrap/app.php'\\\\''; echo '\\\\''OK'\\\\'';')",
       "Bash(del *)",
-      "PowerShell(Out-Null *)"
+      "PowerShell(Out-Null *)",
+      "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\public\\\\css\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\public\\\\css\" /MIR /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\public\\\\css\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\public\\\\css\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\database\\\\migrations\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\database\\\\migrations\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)"
     ]
   }
 }

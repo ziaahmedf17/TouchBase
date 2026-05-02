@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\AccountActive;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RoleMiddleware;
-use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
@@ -23,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultSimpleView('partials.pagination');
 
         // Register middleware aliases
-        $this->app['router']->aliasMiddleware('role', RoleMiddleware::class);
-        $this->app['router']->aliasMiddleware('permission', PermissionMiddleware::class);
+        $this->app['router']->aliasMiddleware('role',           RoleMiddleware::class);
+        $this->app['router']->aliasMiddleware('permission',     PermissionMiddleware::class);
+        $this->app['router']->aliasMiddleware('account_active', AccountActive::class);
 
-        // Register Gates for every permission slug so @can / Gate::allows() work in views
         Gate::before(function (User $user) {
             if ($user->isSuperAdmin() || $user->isAdmin()) {
                 return true;

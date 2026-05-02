@@ -31,7 +31,7 @@
           <th>Sub-Users</th>
           <th>Clients</th>
           <th>Joined</th>
-          <th style="width:150px;">Actions</th>
+          <th style="width:160px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -44,6 +44,9 @@
             @if($admin->business_type)
               <div class="text-muted" style="font-size:.78rem;">{{ $admin->business_type }}</div>
             @endif
+            <span class="badge badge-custom" style="font-size:.68rem;margin-top:.2rem;{{ $admin->accountStatusBadgeStyle() }}">
+              {{ $admin->accountStatusLabel() }}
+            </span>
           </td>
           <td data-label="Email">
             <div>{{ $admin->email }}</div>

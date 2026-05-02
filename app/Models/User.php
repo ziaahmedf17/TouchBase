@@ -20,6 +20,9 @@ class User extends Authenticatable
         'business_description',
         'password',
         'tenant_id',
+        'account_status',
+        'payment_screenshot',
+        'payment_submitted_at',
     ];
 
     protected $hidden = [
@@ -28,8 +31,9 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password'          => 'hashed',
+        'email_verified_at'    => 'datetime',
+        'payment_submitted_at' => 'datetime',
+        'password'             => 'hashed',
     ];
 
     public function roles(): BelongsToMany
@@ -70,6 +74,31 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
+    }
+
+    public function isActive(): bool
+    {
+        return $this->account_status === 'active';
+    }
+
+    public function accountStatusLabel(): string
+    {
+        return match ($this->account_status) {
+            'payment_submitted' => 'Pending Approval',
+            'active'            => 'Active',
+            'rejected'          => 'Rejected',
+            default             => ucfirst($this->account_status ?? ''),
+        };
+    }
+
+    public function accountStatusBadgeStyle(): string
+    {
+        return match ($this->account_status) {
+            'payment_submitted' => 'background:#fef3c7;color:#92400e;',
+            'active'            => 'background:#dcfce7;color:#166534;',
+            'rejected'          => 'background:#fee2e2;color:#991b1b;',
+            default             => 'background:#f1f5f9;color:#475569;',
+        };
     }
 
     /**

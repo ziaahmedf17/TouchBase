@@ -2,6 +2,20 @@
 @section('title', 'Create Account')
 
 @section('content')
+<div style="text-align:center;margin-bottom:1.25rem;">
+  <div style="display:flex;justify-content:center;gap:0;margin-bottom:.5rem;">
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--primary);">
+      <span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;">1</span>
+      Account Info
+    </div>
+    <div style="width:40px;height:2px;background:var(--border);margin:0 .5rem;align-self:center;"></div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--muted);">
+      <span style="width:22px;height:22px;border-radius:50%;background:var(--border);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;">2</span>
+      Payment
+    </div>
+  </div>
+</div>
+
 <h2 class="auth-title">Create account</h2>
 <p class="auth-subtitle">Set up your TouchBase CRM</p>
 
@@ -99,7 +113,7 @@
   </div>
 
   <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.6rem;">
-    Create Account
+    Continue to Payment &rarr;
   </button>
 </form>
 
@@ -121,9 +135,8 @@
   }
 
   typeSelect.addEventListener('change', toggleCustom);
-  toggleCustom(); // run on page load (handles old() value)
+  toggleCustom();
 
-  // Character counter
   const desc = document.getElementById('business_description');
   const counter = document.getElementById('desc-count');
   desc.addEventListener('input', function () {

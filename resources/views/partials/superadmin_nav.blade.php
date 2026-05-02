@@ -1,4 +1,4 @@
-<div style="display:flex;gap:.35rem;margin-bottom:1.25rem;border-bottom:2px solid var(--border);padding-bottom:.75rem;">
+<div class="admin-sub-nav">
   <a href="{{ route('superadmin.dashboard') }}"
      class="btn btn-sm {{ request()->routeIs('superadmin.dashboard') ? 'btn-primary' : 'btn-secondary' }}">
     &#9711; Dashboard
@@ -10,5 +10,13 @@
   <a href="{{ route('superadmin.tickets.index') }}"
      class="btn btn-sm {{ request()->routeIs('superadmin.tickets.*') ? 'btn-primary' : 'btn-secondary' }}">
     &#127915; Tickets
+  </a>
+  <a href="{{ route('superadmin.payments.index') }}"
+     class="btn btn-sm {{ request()->routeIs('superadmin.payments.*') ? 'btn-primary' : 'btn-secondary' }}">
+    &#128184; Payments
+  </a>
+  <a href="{{ route('superadmin.payment-accounts.index') }}"
+     class="btn btn-sm {{ request()->routeIs('superadmin.payment-accounts.*') ? 'btn-primary' : 'btn-secondary' }}">
+    &#127974; Bank Accounts
   </a>
 </div>
