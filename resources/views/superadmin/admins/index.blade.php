@@ -30,6 +30,7 @@
           <th>Email</th>
           <th>Sub-Users</th>
           <th>Clients</th>
+          <th>Plan / Expiry</th>
           <th>Joined</th>
           <th style="width:160px;">Actions</th>
         </tr>
@@ -59,6 +60,29 @@
             <a href="{{ route('superadmin.admins.clients', $admin) }}">
               {{ $admin->clients_count }} clients
             </a>
+          </td>
+          <td data-label="Plan / Expiry">
+            @if($admin->plan_type)
+              <div style="font-size:.85rem;font-weight:600;">{{ $admin->planLabel() }}</div>
+              @if($admin->plan_type === 'lifetime')
+                <div style="font-size:.75rem;color:var(--success);">Never expires</div>
+              @elseif($admin->plan_expires_at)
+                @php $days = $admin->daysUntilExpiry(); @endphp
+                <div style="font-size:.75rem;color:{{ $days !== null && $days < 0 ? '#991b1b' : ($days !== null && $days <= 14 ? '#92400e' : 'var(--muted)') }};">
+                  {{ $admin->plan_expires_at->format('d M Y') }}
+                  @if($days !== null)
+                    @if($days < 0) ({{ abs($days) }}d overdue)
+                    @elseif($days <= 14) ({{ $days }}d left)
+                    @endif
+                  @endif
+                </div>
+              @endif
+              @if($admin->is_suspended)
+                <span style="font-size:.7rem;padding:.1rem .4rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-weight:700;">Suspended</span>
+              @endif
+            @else
+              <span class="text-muted" style="font-size:.82rem;">No plan</span>
+            @endif
           </td>
           <td data-label="Joined">{{ $admin->created_at->format('d M Y') }}</td>
           <td data-label="Actions">
