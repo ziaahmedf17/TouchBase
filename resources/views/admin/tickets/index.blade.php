@@ -32,7 +32,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Ticket #</th>
@@ -45,30 +45,30 @@
       <tbody>
         @foreach($tickets as $ticket)
         <tr style="cursor:pointer;" onclick="window.location='{{ route('admin.tickets.show', $ticket) }}'">
-          <td>
+          <td data-label="Ticket #">
             <code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;border:1px solid var(--border);">
               {{ $ticket->ticket_number }}
             </code>
           </td>
-          <td>
+          <td data-label="Subject">
             <div style="font-weight:600;">{{ $ticket->subject }}</div>
             <div class="text-muted" style="font-size:.8rem;margin-top:.15rem;">
               {{ Str::limit($ticket->description, 80) }}
             </div>
           </td>
-          <td>
+          <td data-label="Status">
             <span class="badge badge-custom" style="{{ $ticket->statusBadgeStyle() }}">
               {{ $ticket->statusLabel() }}
             </span>
           </td>
-          <td>
+          <td data-label="Notes from Team">
             @if($ticket->admin_notes)
               <span style="font-size:.85rem;">{{ Str::limit($ticket->admin_notes, 60) }}</span>
             @else
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td style="white-space:nowrap;">
+          <td data-label="Submitted" style="white-space:nowrap;">
             <div>{{ $ticket->created_at->format('d M Y') }}</div>
             <div class="text-muted" style="font-size:.78rem;">{{ $ticket->created_at->format('H:i') }}</div>
           </td>

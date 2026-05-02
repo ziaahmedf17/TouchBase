@@ -16,7 +16,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Name</th>
@@ -30,10 +30,10 @@
       <tbody>
         @foreach($roles as $role)
         <tr>
-          <td style="font-weight:600;">{{ $role->name }}</td>
-          <td><code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;">{{ $role->slug }}</code></td>
-          <td>{{ $role->description ?? '—' }}</td>
-          <td>
+          <td data-label="Name" style="font-weight:600;">{{ $role->name }}</td>
+          <td data-label="Slug"><code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;">{{ $role->slug }}</code></td>
+          <td data-label="Description">{{ $role->description ?? '—' }}</td>
+          <td data-label="Permissions">
             @forelse($role->permissions->take(4) as $perm)
               <span class="badge badge-custom" style="margin:.1rem .1rem 0 0;">{{ $perm->slug }}</span>
             @empty
@@ -43,8 +43,8 @@
               <span class="text-muted" style="font-size:.8rem;">+{{ $role->permissions->count() - 4 }} more</span>
             @endif
           </td>
-          <td>{{ $role->users_count }}</td>
-          <td>
+          <td data-label="Users">{{ $role->users_count }}</td>
+          <td data-label="Actions">
             <div class="d-flex gap-2">
               <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-primary">Edit</a>
               @if($role->slug !== 'admin')

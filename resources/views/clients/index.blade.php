@@ -24,7 +24,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Name</th>
@@ -37,7 +37,7 @@
       <tbody>
         @foreach($clients as $client)
         <tr>
-          <td>
+          <td data-label="Name">
             <a href="{{ route('clients.show', $client) }}" style="font-weight:600;">
               {{ $client->name }}
             </a>
@@ -45,14 +45,14 @@
               <span class="badge badge-custom">{{ $client->notifications_count }} alerts</span>
             @endif
           </td>
-          <td>
+          <td data-label="Phone">
             @if($client->phone)
               <a href="{{ $client->telUrl() }}">{{ $client->phone }}</a>
             @else
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td>
+          <td data-label="Next Visit">
             @if($client->next_visit_date)
               {{ $client->next_visit_date->format('d M Y') }}
               @if($client->next_visit_date->isPast())
@@ -64,8 +64,8 @@
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td>{{ $client->events_count }}</td>
-          <td>
+          <td data-label="Events">{{ $client->events_count }}</td>
+          <td data-label="Actions">
             <div class="d-flex gap-2">
               <a href="{{ route('clients.show', $client) }}" class="btn btn-sm btn-secondary">View</a>
               @can('clients.edit')

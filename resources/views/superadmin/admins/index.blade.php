@@ -23,7 +23,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Name</th>
@@ -37,7 +37,7 @@
       <tbody>
         @foreach($admins as $admin)
         <tr>
-          <td>
+          <td data-label="Name">
             <a href="{{ route('superadmin.admins.show', $admin) }}" style="font-weight:600;text-decoration:none;color:var(--text);">
               {{ $admin->name }}
             </a>
@@ -45,20 +45,20 @@
               <div class="text-muted" style="font-size:.78rem;">{{ $admin->business_type }}</div>
             @endif
           </td>
-          <td>
+          <td data-label="Email">
             <div>{{ $admin->email }}</div>
             @if($admin->phone)
               <div class="text-muted" style="font-size:.78rem;">{{ $admin->phone }}</div>
             @endif
           </td>
-          <td>{{ $admin->sub_users_count }}</td>
-          <td>
+          <td data-label="Sub-Users">{{ $admin->sub_users_count }}</td>
+          <td data-label="Clients">
             <a href="{{ route('superadmin.admins.clients', $admin) }}">
               {{ $admin->clients_count }} clients
             </a>
           </td>
-          <td>{{ $admin->created_at->format('d M Y') }}</td>
-          <td>
+          <td data-label="Joined">{{ $admin->created_at->format('d M Y') }}</td>
+          <td data-label="Actions">
             <div class="d-flex gap-2">
               <a href="{{ route('superadmin.admins.show', $admin) }}" class="btn btn-sm btn-secondary">View</a>
               <a href="{{ route('superadmin.admins.edit', $admin) }}" class="btn btn-sm btn-primary">Edit</a>

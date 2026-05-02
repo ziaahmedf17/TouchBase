@@ -18,7 +18,7 @@
   <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<div style="display:grid;grid-template-columns:1fr 320px;gap:1.25rem;align-items:start;">
+<div class="grid-sidebar">
 
   {{-- Left: ticket content --}}
   <div style="display:grid;gap:1rem;">
@@ -47,7 +47,7 @@
   </div>
 
   {{-- Right: update panel --}}
-  <div class="card" style="position:sticky;top:1rem;">
+  <div class="card sticky-panel">
     <div class="card-title">Update Ticket</div>
     <form method="POST" action="{{ route('superadmin.tickets.update', $ticket) }}">
       @csrf @method('PUT')
@@ -74,14 +74,4 @@
   </div>
 
 </div>
-
-@push('scripts')
-<script>
-  // Prevent sticky panel from covering content on small screens
-  if (window.innerWidth < 700) {
-    document.querySelector('[style*="grid-template-columns"]').style.gridTemplateColumns = '1fr';
-  }
-</script>
-@endpush
-
 @endsection

@@ -23,7 +23,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Name</th>
@@ -36,22 +36,22 @@
       <tbody>
         @foreach($users as $user)
         <tr>
-          <td style="font-weight:600;">
+          <td data-label="Name" style="font-weight:600;">
             {{ $user->name }}
             @if($user->id === auth()->id())
               <span class="badge badge-custom" style="font-size:.7rem;margin-left:.25rem;">you</span>
             @endif
           </td>
-          <td>{{ $user->email }}</td>
-          <td>
+          <td data-label="Email">{{ $user->email }}</td>
+          <td data-label="Role">
             @forelse($user->roles as $role)
               <span class="badge badge-custom">{{ $role->name }}</span>
             @empty
               <span class="text-muted">—</span>
             @endforelse
           </td>
-          <td>{{ $user->created_at->format('d M Y') }}</td>
-          <td>
+          <td data-label="Joined">{{ $user->created_at->format('d M Y') }}</td>
+          <td data-label="Actions">
             <div class="d-flex gap-2">
               <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-primary">Edit</a>
               @if($user->id !== auth()->id())

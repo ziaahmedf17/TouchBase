@@ -415,6 +415,25 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
   gap: 1rem;
 }
 
+/* ── Sidebar grid: main content + fixed-width panel ── */
+.grid-sidebar {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: start;
+}
+.sticky-panel { position: sticky; top: 1rem; }
+
+/* ── Admin sub-nav ── */
+.admin-sub-nav {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: .75rem;
+}
+
 /* ── Update Alerts button state ── */
 #btn-update-alerts.loading { opacity: .7; pointer-events: none; }
 #alert-result { display: none; margin-top: .75rem; }
@@ -639,6 +658,11 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
   .grid-2col {
     grid-template-columns: 1fr;
   }
+
+  .grid-sidebar {
+    grid-template-columns: 1fr;
+  }
+  .sticky-panel { position: static; }
 
   .cal-cell { min-height: 60px; }
   .cal-event { font-size: .65rem; }

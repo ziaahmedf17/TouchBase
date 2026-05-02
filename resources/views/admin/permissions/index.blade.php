@@ -20,7 +20,7 @@
       {{ $group }}
     </div>
     <div class="table-wrap">
-      <table>
+      <table class="table-cards">
         <thead>
           <tr>
             <th>Name</th>
@@ -32,10 +32,10 @@
         <tbody>
           @foreach($perms as $perm)
           <tr>
-            <td style="font-weight:500;">{{ $perm->name }}</td>
-            <td><code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;">{{ $perm->slug }}</code></td>
-            <td>{{ $perm->description ?? '—' }}</td>
-            <td>
+            <td data-label="Name" style="font-weight:500;">{{ $perm->name }}</td>
+            <td data-label="Slug"><code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;">{{ $perm->slug }}</code></td>
+            <td data-label="Description">{{ $perm->description ?? '—' }}</td>
+            <td data-label="Actions">
               <div class="d-flex gap-2">
                 <a href="{{ route('admin.permissions.edit', $perm) }}" class="btn btn-sm btn-primary">Edit</a>
                 <form method="POST" action="{{ route('admin.permissions.destroy', $perm) }}"

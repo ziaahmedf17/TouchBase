@@ -20,7 +20,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Ticket #</th>
@@ -28,44 +28,44 @@
           <th>Subject</th>
           <th>Status</th>
           <th>Submitted</th>
-          <th style="min-width:300px;">Update</th>
+          <th style="min-width:260px;">Update</th>
         </tr>
       </thead>
       <tbody>
         @foreach($tickets as $ticket)
-        <tr
-          <td>
+        <tr>
+          <td data-label="Ticket #">
             <code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;border:1px solid var(--border);">
               {{ $ticket->ticket_number }}
             </code>
           </td>
-          <td>
+          <td data-label="Admin">
             <div style="font-weight:600;">{{ $ticket->user->name }}</div>
             <div class="text-muted" style="font-size:.78rem;">{{ $ticket->user->email }}</div>
           </td>
-          <td>
+          <td data-label="Subject">
             <a href="{{ route('superadmin.tickets.show', $ticket) }}" style="font-weight:600;text-decoration:none;color:var(--text);">
               {{ $ticket->subject }}
             </a>
-            <div class="text-muted" style="font-size:.8rem;margin-top:.15rem;max-width:280px;">
-              {{ Str::limit($ticket->description, 100) }}
+            <div class="text-muted" style="font-size:.8rem;margin-top:.15rem;">
+              {{ Str::limit($ticket->description, 80) }}
             </div>
             @if($ticket->admin_notes)
               <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem;border-top:1px solid var(--border);padding-top:.25rem;">
-                <strong>Note:</strong> {{ $ticket->admin_notes }}
+                <strong>Note:</strong> {{ Str::limit($ticket->admin_notes, 60) }}
               </div>
             @endif
           </td>
-          <td>
+          <td data-label="Status">
             <span class="badge badge-custom" style="{{ $ticket->statusBadgeStyle() }}">
               {{ $ticket->statusLabel() }}
             </span>
           </td>
-          <td style="white-space:nowrap;">
+          <td data-label="Submitted" style="white-space:nowrap;">
             <div>{{ $ticket->created_at->format('d M Y') }}</div>
             <div class="text-muted" style="font-size:.78rem;">{{ $ticket->created_at->format('H:i') }}</div>
           </td>
-          <td>
+          <td data-label="Update">
             <form method="POST" action="{{ route('superadmin.tickets.update', $ticket) }}"
                   style="display:flex;flex-direction:column;gap:.4rem;">
               @csrf @method('PUT')

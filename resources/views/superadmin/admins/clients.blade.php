@@ -19,7 +19,7 @@
 @else
 <div class="card" style="padding:0;">
   <div class="table-wrap">
-    <table>
+    <table class="table-cards">
       <thead>
         <tr>
           <th>Name</th>
@@ -32,23 +32,23 @@
       <tbody>
         @foreach($clients as $client)
         <tr>
-          <td style="font-weight:600;">{{ $client->name }}</td>
-          <td>
+          <td data-label="Name" style="font-weight:600;">{{ $client->name }}</td>
+          <td data-label="Phone">
             @if($client->phone)
               <a href="{{ $client->telUrl() }}">{{ $client->phone }}</a>
             @else
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td>
+          <td data-label="Next Visit">
             @if($client->next_visit_date)
               {{ $client->next_visit_date->format('d M Y') }}
             @else
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td>{{ $client->events_count }}</td>
-          <td>{{ $client->notifications_count }}</td>
+          <td data-label="Events">{{ $client->events_count }}</td>
+          <td data-label="Alerts">{{ $client->notifications_count }}</td>
         </tr>
         @endforeach
       </tbody>
