@@ -44,7 +44,7 @@
       </thead>
       <tbody>
         @foreach($tickets as $ticket)
-        <tr>
+        <tr style="cursor:pointer;" onclick="window.location='{{ route('admin.tickets.show', $ticket) }}'">
           <td>
             <code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;border:1px solid var(--border);">
               {{ $ticket->ticket_number }}
@@ -63,7 +63,7 @@
           </td>
           <td>
             @if($ticket->admin_notes)
-              <span style="font-size:.85rem;">{{ $ticket->admin_notes }}</span>
+              <span style="font-size:.85rem;">{{ Str::limit($ticket->admin_notes, 60) }}</span>
             @else
               <span class="text-muted">—</span>
             @endif

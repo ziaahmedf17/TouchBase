@@ -17,6 +17,12 @@ class TicketController extends Controller
         return view('superadmin.tickets.index', compact('tickets'));
     }
 
+    public function show(Ticket $ticket)
+    {
+        $ticket->load('user');
+        return view('superadmin.tickets.show', compact('ticket'));
+    }
+
     public function update(Request $request, Ticket $ticket)
     {
         $data = $request->validate([

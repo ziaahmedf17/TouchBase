@@ -33,7 +33,7 @@
       </thead>
       <tbody>
         @foreach($tickets as $ticket)
-        <tr>
+        <tr
           <td>
             <code style="font-size:.8rem;background:var(--surface);padding:.1rem .35rem;border-radius:4px;border:1px solid var(--border);">
               {{ $ticket->ticket_number }}
@@ -44,7 +44,9 @@
             <div class="text-muted" style="font-size:.78rem;">{{ $ticket->user->email }}</div>
           </td>
           <td>
-            <div style="font-weight:600;">{{ $ticket->subject }}</div>
+            <a href="{{ route('superadmin.tickets.show', $ticket) }}" style="font-weight:600;text-decoration:none;color:var(--text);">
+              {{ $ticket->subject }}
+            </a>
             <div class="text-muted" style="font-size:.8rem;margin-top:.15rem;max-width:280px;">
               {{ Str::limit($ticket->description, 100) }}
             </div>

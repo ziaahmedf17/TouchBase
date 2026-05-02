@@ -18,6 +18,12 @@ class TicketController extends Controller
         return view('admin.tickets.index', compact('tickets'));
     }
 
+    public function show(Ticket $ticket)
+    {
+        if ($ticket->user_id !== Auth::id()) abort(403);
+        return view('admin.tickets.show', compact('ticket'));
+    }
+
     public function create()
     {
         return view('admin.tickets.create');
@@ -26,8 +32,8 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'subject'     => 'required|string|max:255',
-            'description' => 'required|string|max:5000',
+            'subject'     => 'required|string|max:100',
+            'description' => 'required|string|max:2000',
         ]);
 
         $ticket = Ticket::create([

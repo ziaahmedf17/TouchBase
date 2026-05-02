@@ -13,6 +13,10 @@ class DashboardController extends Controller
 
     public function index()
     {
+        if (auth()->user()->isSuperAdmin()) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
         $this->reminders->checkAndCreateNotifications();
 
         $tenantId = auth()->user()->tenantId();

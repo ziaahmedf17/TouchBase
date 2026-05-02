@@ -16,15 +16,19 @@
 
   {{-- Desktop nav links (flex: 1 pushes right side over) --}}
   <div class="nav-links" id="nav-links">
-    <a href="{{ route('dashboard') }}"      class="{{ request()->routeIs('dashboard')       ? 'active' : '' }}"><span>Dashboard</span></a>
-    <a href="{{ route('clients.index') }}"  class="{{ request()->routeIs('clients.*')       ? 'active' : '' }}"><span>Clients</span></a>
-    <a href="{{ route('calendar.index') }}" class="{{ request()->routeIs('calendar.*')      ? 'active' : '' }}"><span>Calendar</span></a>
-    <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.*') ? 'active' : '' }}"><span>Alerts</span></a>
     @auth
       @if(auth()->user()->isSuperAdmin())
-        <a href="{{ route('superadmin.admins.index') }}" class="{{ request()->routeIs('superadmin.*') ? 'active' : '' }}"><span>Super Admin</span></a>
-      @elseif(auth()->user()->isAdmin())
-        <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}"><span>Admin</span></a>
+        <a href="{{ route('superadmin.dashboard') }}" class="{{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}"><span>Dashboard</span></a>
+        <a href="{{ route('superadmin.admins.index') }}" class="{{ request()->routeIs('superadmin.admins.*') ? 'active' : '' }}"><span>Admins</span></a>
+        <a href="{{ route('superadmin.tickets.index') }}" class="{{ request()->routeIs('superadmin.tickets.*') ? 'active' : '' }}"><span>Tickets</span></a>
+      @else
+        <a href="{{ route('dashboard') }}"           class="{{ request()->routeIs('dashboard')           ? 'active' : '' }}"><span>Dashboard</span></a>
+        <a href="{{ route('clients.index') }}"       class="{{ request()->routeIs('clients.*')           ? 'active' : '' }}"><span>Clients</span></a>
+        <a href="{{ route('calendar.index') }}"      class="{{ request()->routeIs('calendar.*')          ? 'active' : '' }}"><span>Calendar</span></a>
+        <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.*')     ? 'active' : '' }}"><span>Alerts</span></a>
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.*')             ? 'active' : '' }}"><span>Admin</span></a>
+        @endif
       @endif
     @endauth
   </div>
