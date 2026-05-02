@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentAccount;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,8 @@ class RegisterController extends Controller
             return redirect()->route('register');
         }
         $accounts = PaymentAccount::where('is_active', true)->get();
-        return view('auth.register-payment', compact('accounts'));
+        $plans    = Plan::all()->keyBy('slug');
+        return view('auth.register-payment', compact('accounts', 'plans'));
     }
 
     public function storePayment(Request $request)
@@ -63,8 +65,10 @@ class RegisterController extends Controller
         }
 
         $request->validate([
+            'plan_type'  => 'required|in:monthly,yearly,lifetime',
             'screenshot' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:5120',
         ], [
+            'plan_type.required'  => 'Please select a subscription plan.',
             'screenshot.required' => 'Please upload your payment screenshot.',
             'screenshot.mimes'    => 'Only JPG, PNG, GIF, or PDF files are accepted.',
             'screenshot.max'      => 'File size must not exceed 5 MB.',
@@ -80,6 +84,7 @@ class RegisterController extends Controller
             'account_status'       => 'payment_submitted',
             'payment_screenshot'   => $filename,
             'payment_submitted_at' => now(),
+            'plan_type'            => $request->plan_type,
         ]);
 
         $user->assignRole('admin');
@@ -114,7 +119,6 @@ class RegisterController extends Controller
             'screenshot.max'      => 'File size must not exceed 5 MB.',
         ]);
 
-        // Delete old screenshot
         if ($user->payment_screenshot) {
             Storage::disk('local')->delete('payments/' . $user->payment_screenshot);
         }
@@ -152,5 +156,52 @@ class RegisterController extends Controller
 
         return redirect()->route('account.pending')
             ->with('contact_updated', true);
+    }
+
+    public function showPaymentRequired()
+    {
+        $user = Auth::user();
+        if (!$user->is_suspended) {
+            return redirect()->route('dashboard');
+        }
+        $accounts = PaymentAccount::where('is_active', true)->get();
+        $plans    = Plan::all()->keyBy('slug');
+        return view('auth.payment-required', compact('accounts', 'plans'));
+    }
+
+    public function resubmitRenewal(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->is_suspended) {
+            return redirect()->route('dashboard');
+        }
+
+        $request->validate([
+            'plan_type'  => 'required|in:monthly,yearly,lifetime',
+            'screenshot' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:5120',
+        ], [
+            'plan_type.required'  => 'Please select a renewal plan.',
+            'screenshot.required' => 'Please upload your payment screenshot.',
+            'screenshot.mimes'    => 'Only JPG, PNG, GIF, or PDF files are accepted.',
+            'screenshot.max'      => 'File size must not exceed 5 MB.',
+        ]);
+
+        if ($user->payment_screenshot) {
+            Storage::disk('local')->delete('payments/' . $user->payment_screenshot);
+        }
+
+        $ext      = $request->file('screenshot')->getClientOriginalExtension();
+        $filename = Str::uuid() . '.' . strtolower($ext);
+        $request->file('screenshot')->storeAs('payments', $filename, 'local');
+
+        $user->update([
+            'account_status'       => 'payment_submitted',
+            'payment_screenshot'   => $filename,
+            'payment_submitted_at' => now(),
+            'plan_type'            => $request->plan_type,
+        ]);
+
+        return redirect()->route('account.payment_required')
+            ->with('success', 'Renewal payment submitted. Our team will verify and reactivate your account shortly.');
     }
 }

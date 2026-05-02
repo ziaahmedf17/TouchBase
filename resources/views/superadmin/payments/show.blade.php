@@ -96,11 +96,24 @@
     @endif
 
     @if($admin->account_status !== 'active')
-    <form method="POST" action="{{ route('superadmin.payments.approve', $admin) }}"
-          data-confirm="Approve account for &quot;{{ $admin->name }}&quot;? Remember to call them on {{ $admin->phone }}.">
+    <form method="POST" action="{{ route('superadmin.payments.approve', $admin) }}">
       @csrf
-      <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;margin-bottom:.6rem;">
-        &#10003; Approve Account
+      <div class="form-group" style="margin-bottom:.75rem;">
+        <label class="form-label" style="font-size:.82rem;">Confirm Plan</label>
+        <select name="plan_type" class="form-control" style="font-size:.85rem;" required>
+          @foreach(['monthly','yearly','lifetime'] as $slug)
+            @php $p = $plans[$slug] ?? null; @endphp
+            @if($p)
+              <option value="{{ $p->slug }}" {{ ($admin->plan_type ?? 'monthly') === $p->slug ? 'selected' : '' }}>
+                {{ $p->name }} — {{ $p->formattedPrice() }}
+              </option>
+            @endif
+          @endforeach
+        </select>
+      </div>
+      <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;margin-bottom:.6rem;"
+              onclick="return confirm('Approve account for {{ addslashes($admin->name) }}? Remember to call them on {{ $admin->phone }}.')">
+        &#10003; Approve &amp; Activate
       </button>
     </form>
     @endif

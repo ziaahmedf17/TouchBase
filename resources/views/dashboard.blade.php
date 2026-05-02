@@ -9,6 +9,22 @@
 
 <div id="alert-result" class="alert" style="display:none"></div>
 
+{{-- ── Plan expiry alerts ───────────────────── --}}
+@if($planAlert === 'expiring')
+  <div class="alert" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;margin-bottom:1rem;">
+    <strong>&#9888; Subscription Expiring Soon</strong> —
+    Your {{ auth()->user()->planLabel() }} plan expires in {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }}.
+    Please contact support to renew before it expires.
+  </div>
+@elseif($planAlert === 'grace')
+  @php $overdue = abs($daysLeft); @endphp
+  <div class="alert" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;margin-bottom:1rem;">
+    <strong>&#128680; Subscription Expired</strong> —
+    Your {{ auth()->user()->planLabel() }} plan expired {{ $overdue }} day{{ $overdue == 1 ? '' : 's' }} ago.
+    You are in a grace period. Please renew immediately to avoid account suspension.
+  </div>
+@endif
+
 {{-- ── Stats ────────────────────────────────── --}}
 <div class="stats-grid">
   <div class="stat-card">

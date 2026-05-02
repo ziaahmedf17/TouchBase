@@ -11,11 +11,27 @@
       Admin &bull; Joined {{ $admin->created_at->format('d M Y') }}
     </div>
   </div>
-  <div class="d-flex gap-2">
+  <div class="d-flex gap-2" style="flex-wrap:wrap;">
+    @if($admin->is_suspended)
+      <form method="POST" action="{{ route('superadmin.admins.unsuspend', $admin) }}">
+        @csrf
+        <button type="submit" class="btn btn-success">&#9654; Reactivate</button>
+      </form>
+    @else
+      <form method="POST" action="{{ route('superadmin.admins.suspend', $admin) }}"
+            data-confirm="Suspend account for &quot;{{ $admin->name }}&quot;? They will be redirected to the payment page.">
+        @csrf
+        <button type="submit" class="btn btn-danger">&#9646;&#9646; Suspend</button>
+      </form>
+    @endif
     <a href="{{ route('superadmin.admins.edit', $admin) }}" class="btn btn-primary">Edit</a>
     <a href="{{ route('superadmin.admins.index') }}" class="btn btn-secondary">&#8592; Back</a>
   </div>
 </div>
+
+@if(session('success'))
+  <div class="alert alert-success" data-auto-dismiss>{{ session('success') }}</div>
+@endif
 
 {{-- Stats --}}
 <div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:1.25rem;">
@@ -94,6 +110,77 @@
 
   {{-- Right column --}}
   <div style="display:grid;gap:1rem;align-content:start;">
+
+    {{-- Subscription & Status --}}
+    <div class="card">
+      <div class="card-title">Subscription</div>
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem;margin-bottom:1rem;">
+        <tr>
+          <td style="padding:.35rem 0;color:var(--muted);width:45%;">Status</td>
+          <td style="padding:.35rem 0;">
+            <span style="padding:.2rem .6rem;border-radius:12px;font-size:.78rem;font-weight:600;{{ $admin->accountStatusBadgeStyle() }}">
+              {{ $admin->accountStatusLabel() }}
+            </span>
+            @if($admin->is_suspended)
+              <span style="padding:.2rem .6rem;border-radius:12px;font-size:.78rem;font-weight:600;background:#fee2e2;color:#991b1b;margin-left:.3rem;">
+                Suspended
+              </span>
+            @endif
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:.35rem 0;color:var(--muted);">Plan</td>
+          <td style="padding:.35rem 0;font-weight:600;">{{ $admin->planLabel() }}</td>
+        </tr>
+        @if($admin->plan_started_at)
+        <tr>
+          <td style="padding:.35rem 0;color:var(--muted);">Started</td>
+          <td style="padding:.35rem 0;">{{ $admin->plan_started_at->format('d M Y') }}</td>
+        </tr>
+        @endif
+        @if($admin->plan_expires_at)
+        <tr>
+          <td style="padding:.35rem 0;color:var(--muted);">Expires</td>
+          <td style="padding:.35rem 0;">
+            {{ $admin->plan_expires_at->format('d M Y') }}
+            @php $days = $admin->daysUntilExpiry(); @endphp
+            @if($days !== null)
+              @if($days >= 0)
+                <span style="font-size:.75rem;color:{{ $days <= 14 ? '#92400e' : 'var(--muted)' }};">
+                  ({{ $days }}d left)
+                </span>
+              @else
+                <span style="font-size:.75rem;color:#991b1b;">({{ abs($days) }}d overdue)</span>
+              @endif
+            @endif
+          </td>
+        </tr>
+        @elseif($admin->plan_type === 'lifetime')
+        <tr>
+          <td style="padding:.35rem 0;color:var(--muted);">Expires</td>
+          <td style="padding:.35rem 0;color:var(--success);font-weight:600;">Never</td>
+        </tr>
+        @endif
+      </table>
+
+      {{-- Set plan form --}}
+      <form method="POST" action="{{ route('superadmin.admins.setPlan', $admin) }}">
+        @csrf
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <select name="plan_type" class="form-control" style="font-size:.85rem;flex:1;">
+            @foreach(['monthly','yearly','lifetime'] as $slug)
+              @php $p = $plans[$slug] ?? null; @endphp
+              @if($p)
+                <option value="{{ $p->slug }}" {{ $admin->plan_type === $p->slug ? 'selected' : '' }}>
+                  {{ $p->name }} — {{ $p->formattedPrice() }}
+                </option>
+              @endif
+            @endforeach
+          </select>
+          <button type="submit" class="btn btn-primary" style="white-space:nowrap;font-size:.82rem;">Set Plan</button>
+        </div>
+      </form>
+    </div>
 
     {{-- Recent Clients --}}
     <div class="card">

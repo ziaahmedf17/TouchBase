@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,8 +27,9 @@ class AdminController extends Controller
         $admin->loadCount(['subUsers', 'clients']);
         $admin->load('subUsers.roles');
         $recentClients = $admin->clients()->latest()->take(5)->get();
-        $tickets = \App\Models\Ticket::where('user_id', $admin->id)->latest()->take(5)->get();
-        return view('superadmin.admins.show', compact('admin', 'recentClients', 'tickets'));
+        $tickets       = \App\Models\Ticket::where('user_id', $admin->id)->latest()->take(5)->get();
+        $plans         = Plan::all()->keyBy('slug');
+        return view('superadmin.admins.show', compact('admin', 'recentClients', 'tickets', 'plans'));
     }
 
     public function create()
@@ -92,5 +94,34 @@ class AdminController extends Controller
     {
         $clients = $admin->clients()->withCount('events', 'notifications')->orderBy('name')->paginate(20);
         return view('superadmin.admins.clients', compact('admin', 'clients'));
+    }
+
+    public function suspend(User $admin)
+    {
+        $admin->update(['is_suspended' => true]);
+        return back()->with('success', "Account for \"{$admin->name}\" has been suspended.");
+    }
+
+    public function unsuspend(User $admin)
+    {
+        $admin->update(['is_suspended' => false]);
+        return back()->with('success', "Account for \"{$admin->name}\" has been reactivated.");
+    }
+
+    public function setPlan(Request $request, User $admin)
+    {
+        $data = $request->validate([
+            'plan_type' => 'required|in:monthly,yearly,lifetime',
+        ]);
+
+        $plan = Plan::where('slug', $data['plan_type'])->firstOrFail();
+
+        $admin->update([
+            'plan_type'       => $plan->slug,
+            'plan_started_at' => now(),
+            'plan_expires_at' => $plan->expiresAt(),
+        ]);
+
+        return back()->with('success', "Plan updated to {$plan->name} for \"{$admin->name}\".");
     }
 }

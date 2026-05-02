@@ -23,16 +23,20 @@ class User extends Authenticatable
         'account_status',
         'payment_screenshot',
         'payment_submitted_at',
+        'plan_type',
+        'plan_started_at',
+        'plan_expires_at',
+        'is_suspended',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
         'email_verified_at'    => 'datetime',
         'payment_submitted_at' => 'datetime',
+        'plan_started_at'      => 'datetime',
+        'plan_expires_at'      => 'datetime',
+        'is_suspended'         => 'boolean',
         'password'             => 'hashed',
     ];
 
@@ -59,27 +63,31 @@ class User extends Authenticatable
     public function hasPermission(string $slug): bool
     {
         foreach ($this->roles as $role) {
-            if ($role->hasPermission($slug)) {
-                return true;
-            }
+            if ($role->hasPermission($slug)) return true;
         }
         return false;
     }
 
-    public function isSuperAdmin(): bool
+    public function isSuperAdmin(): bool { return $this->hasRole('super_admin'); }
+    public function isAdmin(): bool      { return $this->hasRole('admin'); }
+    public function isActive(): bool     { return $this->account_status === 'active'; }
+
+    public function tenantId(): ?int
     {
-        return $this->hasRole('super_admin');
+        if ($this->isSuperAdmin()) return null;
+        if ($this->isAdmin())      return $this->id;
+        return $this->tenant_id;
     }
 
-    public function isAdmin(): bool
+    public function assignRole(string|Role $role): void
     {
-        return $this->hasRole('admin');
+        if (is_string($role)) {
+            $role = Role::where('slug', $role)->firstOrFail();
+        }
+        $this->roles()->syncWithoutDetaching($role);
     }
 
-    public function isActive(): bool
-    {
-        return $this->account_status === 'active';
-    }
+    // ── Account status helpers ──────────────────────────────────
 
     public function accountStatusLabel(): string
     {
@@ -101,24 +109,34 @@ class User extends Authenticatable
         };
     }
 
-    /**
-     * Returns the tenant ID to scope queries by.
-     * - super_admin → null (no scoping, sees everything)
-     * - admin       → their own ID (they are the tenant root)
-     * - sub-user    → their admin's ID
-     */
-    public function tenantId(): ?int
+    // ── Plan / subscription helpers ─────────────────────────────
+
+    public function planLabel(): string
     {
-        if ($this->isSuperAdmin()) return null;
-        if ($this->isAdmin()) return $this->id;
-        return $this->tenant_id;
+        return match ($this->plan_type) {
+            'monthly'  => 'Monthly',
+            'yearly'   => 'Yearly',
+            'lifetime' => 'Lifetime',
+            default    => 'No Plan',
+        };
     }
 
-    public function assignRole(string|Role $role): void
+    public function daysUntilExpiry(): ?int
     {
-        if (is_string($role)) {
-            $role = Role::where('slug', $role)->firstOrFail();
-        }
-        $this->roles()->syncWithoutDetaching($role);
+        if (!$this->plan_expires_at) return null;
+        return (int) now()->diffInDays($this->plan_expires_at, false);
+    }
+
+    /**
+     * Returns alert type for the admin dashboard:
+     * 'expiring' (1–14 days left), 'grace' (0 to -7 days past expiry), or null.
+     */
+    public function planAlertType(): ?string
+    {
+        $days = $this->daysUntilExpiry();
+        if ($days === null) return null;
+        if ($days >= 0 && $days <= 14) return 'expiring';
+        if ($days < 0 && $days >= -7)  return 'grace';
+        return null;
     }
 }

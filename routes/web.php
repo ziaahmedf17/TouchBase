@@ -7,6 +7,7 @@ use App\Http\Controllers\SuperAdmin\AdminController as SuperAdminController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdmin\PaymentAccountController;
 use App\Http\Controllers\SuperAdmin\PaymentController;
+use App\Http\Controllers\SuperAdmin\PlanController;
 use App\Http\Controllers\SuperAdmin\TicketController as SuperAdminTicketController;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Auth\LoginController;
@@ -42,6 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/pending',            [RegisterController::class, 'showPending'])->name('account.pending');
     Route::post('/pending/resubmit',  [RegisterController::class, 'resubmitPayment'])->name('account.resubmit');
     Route::post('/pending/contact',   [RegisterController::class, 'updateContact'])->name('account.contact');
+
+    // Suspended admin renewal — accessible while suspended
+    Route::get('/payment-required',        [RegisterController::class, 'showPaymentRequired'])->name('account.payment_required');
+    Route::post('/payment-required/renew', [RegisterController::class, 'resubmitRenewal'])->name('account.renewal');
 
     // ── CRM routes (require active account for admins) ────────────
     Route::middleware('account_active')->group(function () {
@@ -95,7 +100,10 @@ Route::middleware('auth')->group(function () {
 
         // Admins
         Route::resource('admins', SuperAdminController::class);
-        Route::get('admins/{admin}/clients', [SuperAdminController::class, 'clients'])->name('admins.clients');
+        Route::get('admins/{admin}/clients',    [SuperAdminController::class, 'clients'])->name('admins.clients');
+        Route::post('admins/{admin}/suspend',   [SuperAdminController::class, 'suspend'])->name('admins.suspend');
+        Route::post('admins/{admin}/unsuspend', [SuperAdminController::class, 'unsuspend'])->name('admins.unsuspend');
+        Route::post('admins/{admin}/set-plan',  [SuperAdminController::class, 'setPlan'])->name('admins.setPlan');
 
         // Support tickets
         Route::get('tickets',          [SuperAdminTicketController::class, 'index'])->name('tickets.index');
@@ -111,6 +119,10 @@ Route::middleware('auth')->group(function () {
 
         // Bank accounts
         Route::resource('payment-accounts', PaymentAccountController::class);
+
+        // Plans (price management)
+        Route::get('plans',        [PlanController::class, 'index'])->name('plans.index');
+        Route::put('plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
     });
 
 });

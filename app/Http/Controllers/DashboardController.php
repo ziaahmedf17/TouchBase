@@ -37,7 +37,10 @@ class DashboardController extends Controller
         $recentNotifications = (clone $notifQuery)->with('client', 'event')
             ->latest()->take(5)->get();
 
-        return view('dashboard', compact('stats', 'recentNotifications'));
+        $planAlert = auth()->user()->planAlertType();
+        $daysLeft  = auth()->user()->daysUntilExpiry();
+
+        return view('dashboard', compact('stats', 'recentNotifications', 'planAlert', 'daysLeft'));
     }
 
     public function updateAlerts()

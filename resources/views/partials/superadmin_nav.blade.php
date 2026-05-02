@@ -19,4 +19,8 @@
      class="btn btn-sm {{ request()->routeIs('superadmin.payment-accounts.*') ? 'btn-primary' : 'btn-secondary' }}">
     &#127974; Bank Accounts
   </a>
+  <a href="{{ route('superadmin.plans.index') }}"
+     class="btn btn-sm {{ request()->routeIs('superadmin.plans.*') ? 'btn-primary' : 'btn-secondary' }}">
+    &#128176; Plans
+  </a>
 </div>
