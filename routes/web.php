@@ -39,7 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/password/change',   [PasswordController::class, 'update'])->name('password.update');
 
     // Pending approval page — accessible before account is active
-    Route::get('/pending', [RegisterController::class, 'showPending'])->name('account.pending');
+    Route::get('/pending',            [RegisterController::class, 'showPending'])->name('account.pending');
+    Route::post('/pending/resubmit',  [RegisterController::class, 'resubmitPayment'])->name('account.resubmit');
+    Route::post('/pending/contact',   [RegisterController::class, 'updateContact'])->name('account.contact');
 
     // ── CRM routes (require active account for admins) ────────────
     Route::middleware('account_active')->group(function () {

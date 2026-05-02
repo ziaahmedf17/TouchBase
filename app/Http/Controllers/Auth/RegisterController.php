@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\PaymentAccount;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class RegisterController extends Controller
@@ -70,8 +70,8 @@ class RegisterController extends Controller
             'screenshot.max'      => 'File size must not exceed 5 MB.',
         ]);
 
-        $data = session('register_data');
-        $ext  = $request->file('screenshot')->getClientOriginalExtension();
+        $data     = session('register_data');
+        $ext      = $request->file('screenshot')->getClientOriginalExtension();
         $filename = Str::uuid() . '.' . strtolower($ext);
         $request->file('screenshot')->storeAs('payments', $filename, 'local');
 
@@ -95,6 +95,62 @@ class RegisterController extends Controller
         if ($user && $user->account_status === 'active') {
             return redirect()->route('dashboard');
         }
-        return view('auth.pending');
+        $accounts = PaymentAccount::where('is_active', true)->get();
+        return view('auth.pending', compact('accounts'));
+    }
+
+    public function resubmitPayment(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->account_status === 'active') {
+            return redirect()->route('dashboard');
+        }
+
+        $request->validate([
+            'screenshot' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:5120',
+        ], [
+            'screenshot.required' => 'Please upload your payment screenshot.',
+            'screenshot.mimes'    => 'Only JPG, PNG, GIF, or PDF files are accepted.',
+            'screenshot.max'      => 'File size must not exceed 5 MB.',
+        ]);
+
+        // Delete old screenshot
+        if ($user->payment_screenshot) {
+            Storage::disk('local')->delete('payments/' . $user->payment_screenshot);
+        }
+
+        $ext      = $request->file('screenshot')->getClientOriginalExtension();
+        $filename = Str::uuid() . '.' . strtolower($ext);
+        $request->file('screenshot')->storeAs('payments', $filename, 'local');
+
+        $user->update([
+            'account_status'       => 'payment_submitted',
+            'payment_screenshot'   => $filename,
+            'payment_submitted_at' => now(),
+        ]);
+
+        return redirect()->route('account.pending')
+            ->with('success', 'Payment screenshot resubmitted. Our team will review it shortly.');
+    }
+
+    public function updateContact(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->account_status === 'active') {
+            return redirect()->route('dashboard');
+        }
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
+
+        $user->update([
+            'name'  => $request->name,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->route('account.pending')
+            ->with('contact_updated', true);
     }
 }
