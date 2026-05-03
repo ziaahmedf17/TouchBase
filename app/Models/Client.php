@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Interaction;
 
 class Client extends Model
 {
@@ -14,6 +14,7 @@ class Client extends Model
     protected $fillable = [
         'tenant_id',
         'name',
+        'gender',
         'phone',
         'address',
         'notes',
@@ -25,6 +26,11 @@ class Client extends Model
         'next_visit_date'     => 'date',
         'visit_reminder_days' => 'array',
     ];
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'tenant_id');
+    }
 
     public function events(): HasMany
     {
@@ -41,14 +47,12 @@ class Client extends Model
         return $this->hasMany(Interaction::class);
     }
 
-    /** WhatsApp link helper */
     public function whatsappUrl(): string
     {
         $phone = preg_replace('/\D/', '', $this->phone ?? '');
         return "https://wa.me/{$phone}";
     }
 
-    /** tel: link helper */
     public function telUrl(): string
     {
         return "tel:{$this->phone}";

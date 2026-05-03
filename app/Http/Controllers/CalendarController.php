@@ -14,34 +14,63 @@ class CalendarController extends Controller
         $year  = (int) $request->input('year', now()->year);
         $month = (int) $request->input('month', now()->month);
 
-        // Clamp to valid range
         $month = max(1, min(12, $month));
         $year  = max(2000, min(2100, $year));
 
-        $current   = Carbon::create($year, $month, 1);
-        $prev      = $current->copy()->subMonth();
-        $next      = $current->copy()->addMonth();
+        $current     = Carbon::create($year, $month, 1);
+        $prev        = $current->copy()->subMonth();
+        $next        = $current->copy()->addMonth();
         $daysInMonth = $current->daysInMonth;
-
-        // Day of week the month starts on (0=Sun)
-        $startDow = $current->dayOfWeek;
-
-        // Build a map: day_number => [events]
-        $calendarData = [];
+        $startDow    = $current->dayOfWeek;
 
         $tenantId = auth()->user()->tenantId();
+
+        // ── Events (birthday, anniversary, visit, custom) ─────────────
         $eventsQuery = Event::with('client');
         if ($tenantId) {
             $eventsQuery->whereHas('client', fn($q) => $q->where('tenant_id', $tenantId));
         }
-        $events = $eventsQuery->get();
 
-        foreach ($events as $event) {
-            $days = $this->getEventDaysInMonth($event, $year, $month);
-            foreach ($days as $day) {
-                $calendarData[$day][] = $event;
+        $calendarData = [];
+
+        foreach ($eventsQuery->get() as $event) {
+            foreach ($this->getEventDaysInMonth($event, $year, $month) as $day) {
+                $calendarData[$day][] = [
+                    'client_name' => $event->client?->name ?? '—',
+                    'client_url'  => $event->client ? route('clients.show', $event->client) : null,
+                    'type'        => $event->typeLabel(),
+                    'badge'       => $event->badgeClass(),
+                    'label'       => $event->label,
+                    'phone'       => $event->client?->phone,
+                ];
             }
         }
+
+        // ── Client next_visit_date ─────────────────────────────────────
+        $visitQuery = Client::whereNotNull('next_visit_date')
+            ->whereYear('next_visit_date', $year)
+            ->whereMonth('next_visit_date', $month);
+        if ($tenantId) {
+            $visitQuery->where('tenant_id', $tenantId);
+        }
+
+        foreach ($visitQuery->get() as $client) {
+            $day = $client->next_visit_date->day;
+            $calendarData[$day][] = [
+                'client_name' => $client->name,
+                'client_url'  => route('clients.show', $client),
+                'type'        => 'Next Visit',
+                'badge'       => 'badge-visit',
+                'label'       => null,
+                'phone'       => $client->phone,
+            ];
+        }
+
+        // Sort each day's events: visits last, others first
+        foreach ($calendarData as &$dayItems) {
+            usort($dayItems, fn($a, $b) => strcmp($a['type'], $b['type']));
+        }
+        unset($dayItems);
 
         return view('calendar.index', compact(
             'current', 'prev', 'next',
@@ -50,10 +79,6 @@ class CalendarController extends Controller
         ));
     }
 
-    /**
-     * Returns which days of the given month/year this event falls on,
-     * based on its recurrence type.
-     */
     private function getEventDaysInMonth(Event $event, int $year, int $month): array
     {
         $days       = [];
@@ -69,7 +94,6 @@ class CalendarController extends Controller
                 break;
 
             case 'monthly':
-                // Only show from the month the event started
                 if ($monthStart->gte($base->copy()->startOfMonth())) {
                     $day = $base->day;
                     if ($day <= $monthStart->daysInMonth) {
@@ -82,9 +106,8 @@ class CalendarController extends Controller
             case 'biweekly':
                 $interval = $event->recurrence === 'weekly' ? 7 : 14;
                 $cursor   = $base->copy();
-                // Fast-forward close to month start
                 if ($cursor->lt($monthStart)) {
-                    $steps  = (int) floor($cursor->diffInDays($monthStart) / $interval);
+                    $steps = (int) floor($cursor->diffInDays($monthStart) / $interval);
                     $cursor->addDays($steps * $interval);
                 }
                 while ($cursor->lte($monthEnd)) {

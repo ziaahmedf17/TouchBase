@@ -35,4 +35,18 @@ class Notification extends Model
     {
         return $this->hasMany(Interaction::class);
     }
+
+    public function whatsappMessage(): string
+    {
+        $name     = $this->client?->name ?? 'there';
+        $biz      = $this->client?->tenant?->business_name;
+        $sign     = $biz ? "\n\n— {$biz}" : '';
+
+        return match ($this->event?->type) {
+            'birthday'    => "Happy Birthday {$name}! 🎂\nWishing you a wonderful day full of joy and happiness.{$sign}",
+            'anniversary' => "Happy Anniversary {$name}! 🎉\nCongratulations on this special milestone.{$sign}",
+            'visit'       => "Hi {$name}, 👋\nJust a friendly reminder for your upcoming visit.\nLooking forward to seeing you! 😊{$sign}",
+            default       => "Hi {$name}, 😊\nJust a friendly reminder from us.\nHope to connect with you soon!{$sign}",
+        };
+    }
 }

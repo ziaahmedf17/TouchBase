@@ -32,14 +32,14 @@ class Ticket extends Model
         };
     }
 
-    public function statusBadgeStyle(): string
+    public function statusBadgeClass(): string
     {
         return match($this->status) {
-            'open'          => 'background:#dbeafe;color:#1d4ed8;',
-            'working_on_it' => 'background:#fef9c3;color:#92400e;',
-            'resolved'      => 'background:#dcfce7;color:#166534;',
-            'closed'        => 'background:#f1f5f9;color:#64748b;',
-            default         => '',
+            'open'          => 'badge-info',
+            'working_on_it' => 'badge-warning',
+            'resolved'      => 'badge-success',
+            'closed'        => 'badge-neutral',
+            default         => 'badge-neutral',
         };
     }
 }

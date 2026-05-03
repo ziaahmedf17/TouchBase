@@ -19,10 +19,20 @@
         @error('name')<div class="form-error">{{ $message }}</div>@enderror
       </div>
       <div class="form-group">
-        <label class="form-label">Phone</label>
-        <input class="form-control" type="tel" name="phone"
-               value="{{ old('phone', $client->phone) }}">
+        <label class="form-label">Gender</label>
+        <select class="form-control" name="gender">
+          <option value="">— Select —</option>
+          <option value="male"   {{ old('gender', $client->gender) === 'male'   ? 'selected' : '' }}>Male</option>
+          <option value="female" {{ old('gender', $client->gender) === 'female' ? 'selected' : '' }}>Female</option>
+          <option value="other"  {{ old('gender', $client->gender) === 'other'  ? 'selected' : '' }}>Other</option>
+        </select>
       </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input class="form-control" type="tel" name="phone"
+             value="{{ old('phone', $client->phone) }}">
     </div>
 
     <div class="form-group">
@@ -59,4 +69,6 @@
     </div>
   </form>
 </div>
+
+@endpush
 @endsection

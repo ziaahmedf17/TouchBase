@@ -21,7 +21,7 @@
   <div style="display:grid;gap:1rem;">
 
     {{-- Current status --}}
-    <div style="padding:.75rem 1.25rem;border-radius:var(--radius);font-weight:600;font-size:.9rem;{{ $admin->accountStatusBadgeStyle() }}">
+    <div class="status-banner {{ $admin->accountStatusBadgeClass() }}">
       Status: {{ $admin->accountStatusLabel() }}
     </div>
 

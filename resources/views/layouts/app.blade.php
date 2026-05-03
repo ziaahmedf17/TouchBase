@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'TouchBase') — TouchBase CRM</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+  <script>
+    try { if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark'); } catch(e) {}
+  </script>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   @stack('head')
 </head>
@@ -38,6 +42,11 @@
     <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
+    {{-- Dark mode toggle --}}
+    <button id="theme-toggle" class="theme-toggle-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <span id="theme-icon">&#9790;</span>
+    </button>
+
     {{-- Bell icon with dropdown --}}
     <div class="bell-wrap">
       <button id="bell-btn" class="bell-btn" title="Notifications">&#128276;</button>
@@ -51,7 +60,7 @@
         <div class="notif-list" id="notif-list-preview">
           @php
             $tenantId = auth()->user()->tenantId();
-            $previewQuery = \App\Models\Notification::with('client','event')->latest();
+            $previewQuery = \App\Models\Notification::with('client.tenant','event')->latest();
             if ($tenantId) {
                 $previewQuery->whereHas('client', fn($q) => $q->where('tenant_id', $tenantId));
             }
@@ -71,6 +80,8 @@
                   <a href="{{ $n->client->telUrl() }}" class="btn btn-sm btn-success">Call</a>
                   <a href="{{ $n->client->whatsappUrl() }}" target="_blank" class="btn btn-sm btn-primary">WhatsApp</a>
                   <button class="btn btn-sm btn-secondary" data-copy="{{ $n->client->phone }}">Copy #</button>
+                  <button class="btn btn-sm btn-secondary" data-copy="{{ $n->whatsappMessage() }}"
+                          title="Copy pre-written message">&#128172; Msg</button>
                 @endif
               </div>
               @endif
@@ -122,6 +133,16 @@
   </div>
 </nav>
 
+{{-- ── Announcement Banner ──────────────────── --}}
+@auth
+  @if(!auth()->user()->isSuperAdmin())
+    @php $announcement = \App\Models\Announcement::where('is_active', true)->latest()->first(); @endphp
+    @if($announcement)
+      <div class="announcement-banner">&#128226; {{ $announcement->message }}</div>
+    @endif
+  @endif
+@endauth
+
 {{-- ── Flash Messages ───────────────────────── --}}
 <div class="container" style="padding-bottom:0; margin-bottom:0;">
   @if(session('success'))
@@ -136,6 +157,13 @@
 <main class="container">
   @yield('content')
 </main>
+
+<footer style="border-top:1px solid var(--border);padding:.75rem 1rem;text-align:center;font-size:.75rem;color:var(--muted);margin-top:2rem;">
+  &copy; {{ date('Y') }} TouchBase &mdash; A product of
+  <a href="https://genwizz.com" target="_blank" rel="noopener" style="color:var(--muted);">Genwizz.com</a>
+  &nbsp;&bull;&nbsp;
+  <a href="mailto:touchbase@genwizz.com" style="color:var(--muted);">touchbase@genwizz.com</a>
+</footer>
 
 <script src="{{ asset('js/app.js') }}"></script>
 @stack('scripts')

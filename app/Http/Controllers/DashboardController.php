@@ -46,6 +46,10 @@ class DashboardController extends Controller
             ->sortBy(fn($e) => $e->nextOccurrence())
             ->values();
 
+        $interactionBase = Interaction::when($tenantId, fn($q) =>
+            $q->whereHas('client', fn($c) => $c->where('tenant_id', $tenantId))
+        );
+
         $stats = [
             'total_clients'        => (clone $clientQuery)->count(),
             'unread_notifications' => (clone $notifQuery)->where('is_read', false)->count(),
@@ -56,9 +60,11 @@ class DashboardController extends Controller
                 ->count(),
             'not_contacted'        => $notContactedCount,
             'upcoming_events'      => $upcomingEvents->count(),
+            'interactions_week'    => (clone $interactionBase)->where('contacted_at', '>=', now()->subDays(7))->count(),
+            'interactions_month'   => (clone $interactionBase)->where('contacted_at', '>=', now()->subDays(30))->count(),
         ];
 
-        $recentNotifications = (clone $notifQuery)->with('client', 'event')
+        $recentNotifications = (clone $notifQuery)->with('client.tenant', 'event')
             ->latest()->take(5)->get();
 
         $planAlert = auth()->user()->planAlertType();
@@ -76,7 +82,7 @@ class DashboardController extends Controller
 
         $unreadCount = (clone $notifQuery)->where('is_read', false)->count();
 
-        $recentNotifications = (clone $notifQuery)->with('client', 'event')
+        $recentNotifications = (clone $notifQuery)->with('client.tenant', 'event')
             ->latest()->take(5)->get();
 
         $html = view('partials.recent_notifications', compact('recentNotifications'))->render();

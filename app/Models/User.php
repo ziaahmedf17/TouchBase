@@ -16,6 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'business_name',
         'business_type',
         'business_description',
         'password',
@@ -99,13 +100,13 @@ class User extends Authenticatable
         };
     }
 
-    public function accountStatusBadgeStyle(): string
+    public function accountStatusBadgeClass(): string
     {
         return match ($this->account_status) {
-            'payment_submitted' => 'background:#fef3c7;color:#92400e;',
-            'active'            => 'background:#dcfce7;color:#166534;',
-            'rejected'          => 'background:#fee2e2;color:#991b1b;',
-            default             => 'background:#f1f5f9;color:#475569;',
+            'payment_submitted' => 'badge-warning',
+            'active'            => 'badge-success',
+            'rejected'          => 'badge-danger',
+            default             => 'badge-neutral',
         };
     }
 

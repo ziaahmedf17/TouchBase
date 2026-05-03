@@ -60,7 +60,7 @@
         @foreach($logs as $log)
         <tr>
           <td data-label="Action">
-            <span class="badge badge-custom" style="font-size:.75rem;{{ $log->actionBadgeStyle() }}">
+            <span class="badge {{ $log->actionBadgeClass() }}" style="font-size:.75rem;">
               {{ $log->actionLabel() }}
             </span>
           </td>

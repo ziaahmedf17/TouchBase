@@ -10,6 +10,7 @@
     <a href="#features" class="hide-mobile">Features</a>
     <a href="#how-it-works" class="hide-mobile">How It Works</a>
     <a href="#pricing" class="hide-mobile">Pricing</a>
+    <a href="#contact" class="hide-mobile">Contact</a>
     <a href="{{ route('login') }}" style="color:#2563eb;font-weight:600;">Sign In</a>
     <a href="{{ route('register') }}"
        style="background:#2563eb;color:#fff;padding:.4rem 1rem;border-radius:7px;font-weight:600;font-size:.88rem;text-decoration:none;">
@@ -206,6 +207,94 @@
   </div>
 </section>
 
+{{-- ── Contact ───────────────────────────────── --}}
+<section class="lp-section lp-section-alt" id="contact">
+  <div class="lp-container" style="max-width:640px;">
+    <div class="lp-section-label">Contact</div>
+    <h2 class="lp-section-title">Get in touch</h2>
+    <p class="lp-section-sub">Have a question or need help? Send us a message and we'll get back to you.</p>
+
+    @if(session('contact_success'))
+      <div style="background:#dcfce7;color:#166534;border:1px solid #86efac;border-radius:8px;
+                  padding:.85rem 1.1rem;margin-bottom:1.5rem;font-weight:600;">
+        &#10003; Your message has been sent! We'll be in touch soon.
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('contact.store') }}"
+          style="background:#fff;border-radius:12px;padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+      @csrf
+
+      <div class="grid-2col" style="gap:1rem;margin-bottom:1rem;">
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;color:#374151;">
+            Your Name <span style="color:#dc2626;">*</span>
+          </label>
+          <input type="text" name="name" value="{{ old('name') }}" required
+                 placeholder="Ali Khan"
+                 style="width:100%;padding:.6rem .8rem;border:1px solid #d1d5db;border-radius:7px;font-size:.9rem;box-sizing:border-box;">
+          @error('name')<div style="color:#dc2626;font-size:.78rem;margin-top:.2rem;">{{ $message }}</div>@enderror
+        </div>
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;color:#374151;">
+            Email Address <span style="color:#dc2626;">*</span>
+          </label>
+          <input type="email" name="email" value="{{ old('email') }}" required
+                 placeholder="ali@example.com"
+                 style="width:100%;padding:.6rem .8rem;border:1px solid #d1d5db;border-radius:7px;font-size:.9rem;box-sizing:border-box;">
+          @error('email')<div style="color:#dc2626;font-size:.78rem;margin-top:.2rem;">{{ $message }}</div>@enderror
+        </div>
+      </div>
+
+      <div class="grid-2col" style="gap:1rem;margin-bottom:1rem;">
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;color:#374151;">Phone</label>
+          <input type="text" name="phone" value="{{ old('phone') }}"
+                 placeholder="+92 300 0000000"
+                 style="width:100%;padding:.6rem .8rem;border:1px solid #d1d5db;border-radius:7px;font-size:.9rem;box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;color:#374151;">Subject</label>
+          <input type="text" name="subject" value="{{ old('subject') }}"
+                 placeholder="Pricing question"
+                 style="width:100%;padding:.6rem .8rem;border:1px solid #d1d5db;border-radius:7px;font-size:.9rem;box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:1.25rem;">
+        <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:.3rem;color:#374151;">
+          Message <span style="color:#dc2626;">*</span>
+        </label>
+        <textarea name="message" id="contact-message" required rows="5" maxlength="2000"
+                  placeholder="Write your message here..."
+                  style="width:100%;padding:.6rem .8rem;border:1px solid #d1d5db;border-radius:7px;font-size:.9rem;
+                         box-sizing:border-box;resize:vertical;">{{ old('message') }}</textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.25rem;">
+          @error('message')
+            <div style="color:#dc2626;font-size:.78rem;">{{ $message }}</div>
+          @else
+            <div></div>
+          @enderror
+          <div id="contact-msg-count" style="font-size:.75rem;color:#6b7280;">
+            <span id="contact-msg-used">{{ strlen(old('message', '')) }}</span> / 2000
+          </div>
+        </div>
+      </div>
+
+      <button type="submit"
+              style="background:#2563eb;color:#fff;border:none;padding:.7rem 2rem;border-radius:7px;
+                     font-size:.95rem;font-weight:600;cursor:pointer;width:100%;">
+        Send Message &#8594;
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-top:1.25rem;font-size:.85rem;color:#64748b;">
+      Or email us directly at
+      <a href="mailto:touchbase@genwizz.com" style="color:#2563eb;">touchbase@genwizz.com</a>
+    </p>
+  </div>
+</section>
+
 {{-- ── Footer ───────────────────────────────── --}}
 <footer class="lp-footer">
   <div class="lp-footer-inner">
@@ -219,8 +308,32 @@
       <a href="{{ route('login') }}">Sign In</a>
       <a href="{{ route('register') }}">Register</a>
     </div>
-    <div style="font-size:.8rem;">
-      &copy; {{ date('Y') }} TouchBase. All rights reserved.
+    <div style="display:flex;gap:.75rem;align-items:center;">
+      <a href="https://www.linkedin.com/company/genwizz/" target="_blank" rel="noopener"
+         title="LinkedIn" style="color:#94a3b8;text-decoration:none;font-size:.82rem;display:flex;align-items:center;gap:.3rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.452H17.21v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.987V9h3.102v1.561h.044c.431-.817 1.485-1.678 3.057-1.678 3.269 0 3.873 2.151 3.873 4.948v6.621zM5.337 7.433a1.803 1.803 0 1 1 0-3.606 1.803 1.803 0 0 1 0 3.606zM6.959 20.452H3.713V9h3.246v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a href="https://www.facebook.com/GenWizz" target="_blank" rel="noopener"
+         title="Facebook" style="color:#94a3b8;text-decoration:none;font-size:.82rem;display:flex;align-items:center;gap:.3rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+        </svg>
+        Facebook
+      </a>
+    </div>
+    <div style="font-size:.82rem;line-height:1.8;text-align:right;">
+      <div>
+        &#9993; <a href="mailto:touchbase@genwizz.com"
+                   style="color:#94a3b8;text-decoration:none;">touchbase@genwizz.com</a>
+      </div>
+      <div style="margin-top:.2rem;font-size:.78rem;color:#64748b;">
+        &copy; {{ date('Y') }} TouchBase. All rights reserved.<br>
+        A product of <a href="https://genwizz.com" target="_blank" rel="noopener"
+                        style="color:#64748b;text-decoration:none;">Genwizz.com</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -229,6 +342,17 @@
 
 @push('scripts')
 <script>
+  // Contact message character counter
+  var msgArea  = document.getElementById('contact-message');
+  var msgCount = document.getElementById('contact-msg-used');
+  if (msgArea && msgCount) {
+    msgArea.addEventListener('input', function () {
+      var len = msgArea.value.length;
+      msgCount.textContent = len;
+      msgCount.style.color = len >= 1900 ? '#dc2626' : len >= 1600 ? '#d97706' : '#6b7280';
+    });
+  }
+
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {

@@ -16,7 +16,7 @@
 <div style="display:grid;gap:1rem;max-width:720px;">
 
   {{-- Status banner --}}
-  <div style="padding:.75rem 1.25rem;border-radius:var(--radius);font-weight:600;font-size:.9rem;{{ $ticket->statusBadgeStyle() }}">
+  <div class="status-banner {{ $ticket->statusBadgeClass() }}">
     Status: {{ $ticket->statusLabel() }}
   </div>
 

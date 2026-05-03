@@ -23,7 +23,7 @@
   {{-- Left: ticket content --}}
   <div style="display:grid;gap:1rem;">
 
-    <div style="padding:.75rem 1.25rem;border-radius:var(--radius);font-weight:600;font-size:.9rem;{{ $ticket->statusBadgeStyle() }}">
+    <div class="status-banner {{ $ticket->statusBadgeClass() }}">
       Status: {{ $ticket->statusLabel() }}
     </div>
 

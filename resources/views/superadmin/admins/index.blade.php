@@ -82,7 +82,7 @@
             @if($admin->business_type)
               <div class="text-muted" style="font-size:.78rem;">{{ $admin->business_type }}</div>
             @endif
-            <span class="badge badge-custom" style="font-size:.68rem;margin-top:.2rem;{{ $admin->accountStatusBadgeStyle() }}">
+            <span class="badge {{ $admin->accountStatusBadgeClass() }}" style="font-size:.68rem;margin-top:.2rem;">
               {{ $admin->accountStatusLabel() }}
             </span>
           </td>
@@ -105,7 +105,10 @@
                 <div style="font-size:.75rem;color:var(--success);">Never expires</div>
               @elseif($admin->plan_expires_at)
                 @php $days = $admin->daysUntilExpiry(); @endphp
-                <div style="font-size:.75rem;color:{{ $days !== null && $days < 0 ? '#991b1b' : ($days !== null && $days <= 14 ? '#92400e' : 'var(--muted)') }};">
+                @php
+                  $expiryClass = $days !== null && $days < 0 ? 'text-danger-muted' : ($days !== null && $days <= 14 ? 'text-warning-muted' : 'text-muted');
+                @endphp
+                <div class="{{ $expiryClass }}" style="font-size:.75rem;">
                   {{ $admin->plan_expires_at->format('d M Y') }}
                   @if($days !== null)
                     @if($days < 0) ({{ abs($days) }}d overdue)
@@ -115,7 +118,7 @@
                 </div>
               @endif
               @if($admin->is_suspended)
-                <span style="font-size:.7rem;padding:.1rem .4rem;border-radius:8px;background:#fee2e2;color:#991b1b;font-weight:700;">Suspended</span>
+                <span class="badge badge-danger" style="font-size:.7rem;">Suspended</span>
               @endif
             @else
               <span class="text-muted" style="font-size:.82rem;">No plan</span>

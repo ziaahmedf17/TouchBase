@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
-use App\Models\Event;
+use App\Models\Interaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -26,6 +26,21 @@ class ClientController extends Controller
         $query  = $this->tenantQuery()->withCount('events', 'notifications');
         $search = $request->input('search');
         $visit  = $request->input('visit');
+        $gender = $request->input('gender');
+        $sort   = $request->input('sort', 'name');
+        $dir    = $request->input('dir', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        if (!in_array($sort, ['name', 'next_visit_date'])) {
+            $sort = 'name';
+        }
+
+        // Subquery: last interaction date per client
+        $query->addSelect([
+            'last_contacted_at' => Interaction::select('contacted_at')
+                ->whereColumn('client_id', 'clients.id')
+                ->latest('contacted_at')
+                ->limit(1),
+        ]);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -46,9 +61,20 @@ class ClientController extends Controller
             default   => null,
         };
 
-        $clients = $query->orderBy('name')->paginate(20)->withQueryString();
+        if ($gender) {
+            $query->where('gender', $gender);
+        }
 
-        return view('clients.index', compact('clients', 'search', 'visit'));
+        // Sort — nulls always last for date column
+        if ($sort === 'next_visit_date') {
+            $query->orderByRaw("(next_visit_date IS NULL) ASC, next_visit_date {$dir}");
+        } else {
+            $query->orderBy($sort, $dir);
+        }
+
+        $clients = $query->paginate(20)->withQueryString();
+
+        return view('clients.index', compact('clients', 'search', 'visit', 'gender', 'sort', 'dir'));
     }
 
     public function create()
@@ -62,6 +88,7 @@ class ClientController extends Controller
         $this->authorize('clients.create');
         $data = $request->validate([
             'name'               => 'required|string|max:255',
+            'gender'             => 'nullable|in:male,female,other',
             'phone'              => 'nullable|string|max:30',
             'address'            => 'nullable|string|max:500',
             'notes'              => 'nullable|string|max:2000',
@@ -69,10 +96,8 @@ class ClientController extends Controller
             'visit_reminder_days'=> 'nullable|string',
         ]);
 
-        $data['visit_reminder_days'] = $this->parseReminderDays(
-            $request->input('visit_reminder_days', '')
-        );
-        $data['tenant_id'] = auth()->user()->tenantId();
+        $data['visit_reminder_days'] = $this->parseReminderDays($request->input('visit_reminder_days', ''));
+        $data['tenant_id']           = auth()->user()->tenantId();
 
         $client = Client::create($data);
 
@@ -130,6 +155,7 @@ class ClientController extends Controller
 
         $data = $request->validate([
             'name'               => 'required|string|max:255',
+            'gender'             => 'nullable|in:male,female,other',
             'phone'              => 'nullable|string|max:30',
             'address'            => 'nullable|string|max:500',
             'notes'              => 'nullable|string|max:2000',
@@ -137,9 +163,7 @@ class ClientController extends Controller
             'visit_reminder_days'=> 'nullable|string',
         ]);
 
-        $data['visit_reminder_days'] = $this->parseReminderDays(
-            $request->input('visit_reminder_days', '')
-        );
+        $data['visit_reminder_days'] = $this->parseReminderDays($request->input('visit_reminder_days', ''));
 
         $client->update($data);
 
@@ -176,4 +200,5 @@ class ClientController extends Controller
             fn ($v) => $v > 0
         ));
     }
+
 }

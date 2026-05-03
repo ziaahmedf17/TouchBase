@@ -57,7 +57,7 @@
             </div>
           </td>
           <td data-label="Status">
-            <span class="badge badge-custom" style="{{ $ticket->statusBadgeStyle() }}">
+            <span class="badge {{ $ticket->statusBadgeClass() }}">
               {{ $ticket->statusLabel() }}
             </span>
           </td>

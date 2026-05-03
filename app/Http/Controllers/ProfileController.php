@@ -17,19 +17,31 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        $data = $request->validate([
+        $rules = [
             'name'     => 'required|string|max:255',
             'phone'    => 'nullable|string|max:20',
             'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
             'password' => ['nullable', 'confirmed', Password::min(8)],
-        ]);
+        ];
 
-        $user->update([
+        if ($user->isAdmin()) {
+            $rules['business_name'] = 'nullable|string|max:100';
+        }
+
+        $data = $request->validate($rules);
+
+        $update = [
             'name'  => $data['name'],
             'phone' => $data['phone'] ?? null,
             'email' => $data['email'],
             ...($data['password'] ? ['password' => $data['password']] : []),
-        ]);
+        ];
+
+        if ($user->isAdmin()) {
+            $update['business_name'] = $data['business_name'] ?? null;
+        }
+
+        $user->update($update);
 
         return back()->with('success', 'Profile updated successfully.');
     }

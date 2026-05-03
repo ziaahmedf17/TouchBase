@@ -27,4 +27,17 @@
      class="btn btn-sm {{ request()->routeIs('superadmin.activity.*') ? 'btn-primary' : 'btn-secondary' }}">
     &#128221; Activity
   </a>
+  <a href="{{ route('superadmin.contacts.index') }}"
+     class="btn btn-sm {{ request()->routeIs('superadmin.contacts.*') ? 'btn-primary' : 'btn-secondary' }}"
+     style="position:relative;">
+    &#9993; Inquiries
+    @php $unread = \App\Models\ContactMessage::where('is_read', false)->count(); @endphp
+    @if($unread > 0)
+      <span style="position:absolute;top:-5px;right:-5px;background:var(--danger);color:#fff;
+                   font-size:.6rem;font-weight:700;border-radius:50%;width:16px;height:16px;
+                   display:flex;align-items:center;justify-content:center;line-height:1;">
+        {{ $unread > 9 ? '9+' : $unread }}
+      </span>
+    @endif
+  </a>
 </div>

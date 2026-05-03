@@ -46,6 +46,9 @@
   </button>
 </form>
 
+<p class="auth-switch" style="margin-top:.75rem;">
+  <a href="{{ route('password.forgot') }}" style="font-size:.85rem;">Forgot your password?</a>
+</p>
 <p class="auth-switch">
   Don't have an account? <a href="{{ route('register') }}">Create one</a>
 </p>

@@ -18,10 +18,20 @@
         @error('name')<div class="form-error">{{ $message }}</div>@enderror
       </div>
       <div class="form-group">
-        <label class="form-label">Phone</label>
-        <input class="form-control" type="tel" name="phone" value="{{ old('phone') }}" placeholder="+92300…">
-        @error('phone')<div class="form-error">{{ $message }}</div>@enderror
+        <label class="form-label">Gender</label>
+        <select class="form-control" name="gender">
+          <option value="">— Select —</option>
+          <option value="male"   {{ old('gender') === 'male'   ? 'selected' : '' }}>Male</option>
+          <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
+          <option value="other"  {{ old('gender') === 'other'  ? 'selected' : '' }}>Other</option>
+        </select>
       </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input class="form-control" type="tel" name="phone" value="{{ old('phone') }}" placeholder="+92300…">
+      @error('phone')<div class="form-error">{{ $message }}</div>@enderror
     </div>
 
     <div class="form-group">
@@ -67,6 +77,7 @@
 
 @push('scripts')
 <script>
+// ── Event rows ──────────────────────────────────────────────────────
 (function () {
   let eventIndex = 0;
 

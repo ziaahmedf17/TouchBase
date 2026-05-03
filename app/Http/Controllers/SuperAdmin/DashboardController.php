@@ -4,8 +4,8 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\ContactMessage;
 use App\Models\Plan;
-use App\Models\Role;
 use App\Models\Ticket;
 use App\Models\User;
 
@@ -22,8 +22,9 @@ class DashboardController extends Controller
             'suspended_admins'=> $adminQuery()->where('is_suspended', true)->count(),
             'total_sub_users' => User::whereNotNull('tenant_id')->count(),
             'total_clients'   => Client::count(),
-            'open_tickets'    => Ticket::where('status', 'open')->count(),
-            'working_tickets' => Ticket::where('status', 'working_on_it')->count(),
+            'open_tickets'        => Ticket::where('status', 'open')->count(),
+            'working_tickets'     => Ticket::where('status', 'working_on_it')->count(),
+            'unread_inquiries'    => ContactMessage::where('is_read', false)->count(),
         ];
 
         // Plan distribution (active + non-suspended admins only)
@@ -35,6 +36,18 @@ class DashboardController extends Controller
                 ->where('plan_type', $slug)
                 ->count();
         }
+
+        // Revenue summary — active subscription value at current plan prices
+        $revenueSummary = [];
+        $totalValue = 0;
+        foreach (['monthly', 'yearly', 'lifetime'] as $slug) {
+            $price = (float) ($plans[$slug]?->price ?? 0);
+            $count = $planCounts[$slug];
+            $value = $count * $price;
+            $revenueSummary[$slug] = compact('count', 'price', 'value');
+            $totalValue += $value;
+        }
+        $revenueSummary['total'] = $totalValue;
 
         // Upcoming renewals in next 30 days
         $upcomingRenewals = $adminQuery()
@@ -64,10 +77,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $recentInquiries = ContactMessage::latest()->take(5)->get();
+
         return view('superadmin.dashboard', compact(
-            'stats', 'plans', 'planCounts', 'upcomingRenewals',
+            'stats', 'plans', 'planCounts', 'revenueSummary', 'upcomingRenewals',
             'pendingApprovals', 'suspendedAdmins',
-            'recentAdmins', 'recentTickets'
+            'recentAdmins', 'recentTickets', 'recentInquiries'
         ));
     }
 }

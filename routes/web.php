@@ -8,6 +8,8 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardCo
 use App\Http\Controllers\SuperAdmin\PaymentAccountController;
 use App\Http\Controllers\SuperAdmin\PaymentController;
 use App\Http\Controllers\SuperAdmin\ActivityController;
+use App\Http\Controllers\SuperAdmin\AnnouncementController;
+use App\Http\Controllers\SuperAdmin\ContactMessageController;
 use App\Http\Controllers\SuperAdmin\CacheController;
 use App\Http\Controllers\SuperAdmin\PlanController;
 use App\Http\Controllers\SuperAdmin\TicketController as SuperAdminTicketController;
@@ -22,11 +24,13 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public landing page ───────────────────────────────────────────
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/',  [WelcomeController::class, 'index'])->name('home');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // ── Guest-only routes ─────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -36,6 +40,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/register',          [RegisterController::class, 'storeStep1']);
     Route::get('/register/payment',   [RegisterController::class, 'showPayment'])->name('register.payment');
     Route::post('/register/payment',  [RegisterController::class, 'storePayment'])->name('register.payment.store');
+    Route::get('/password/forgot',    [PasswordController::class, 'showForgotForm'])->name('password.forgot');
+    Route::post('/password/forgot',   [PasswordController::class, 'processForgot'])->name('password.forgot.submit');
+    Route::get('/password/reset',     [PasswordController::class, 'showResetForm'])->name('password.reset.form');
+    Route::post('/password/reset',    [PasswordController::class, 'resetPassword'])->name('password.reset.submit');
 });
 
 // ── Authenticated routes ──────────────────────────────────────────
@@ -138,8 +146,17 @@ Route::middleware('auth')->group(function () {
         // Activity log
         Route::get('activity', [ActivityController::class, 'index'])->name('activity.index');
 
+        // Contact inquiries
+        Route::get('contacts',           [ContactMessageController::class, 'index'])->name('contacts.index');
+        Route::get('contacts/{contact}', [ContactMessageController::class, 'show'])->name('contacts.show');
+        Route::delete('contacts/{contact}', [ContactMessageController::class, 'destroy'])->name('contacts.destroy');
+
         // Cache management
         Route::post('cache/clear', [CacheController::class, 'clear'])->name('cache.clear');
+
+        // Announcement banner
+        Route::post('announcement',   [AnnouncementController::class, 'store'])->name('announcement.store');
+        Route::delete('announcement', [AnnouncementController::class, 'destroy'])->name('announcement.destroy');
     });
 
 });

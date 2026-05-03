@@ -84,7 +84,7 @@
             @endif
           </td>
           <td data-label="Status">
-            <span class="badge badge-custom" style="{{ $admin->accountStatusBadgeStyle() }}">
+            <span class="badge {{ $admin->accountStatusBadgeClass() }}">
               {{ $admin->accountStatusLabel() }}
             </span>
           </td>

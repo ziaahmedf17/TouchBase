@@ -15,6 +15,7 @@
     <a href="{{ $n->client->telUrl() }}"       class="btn btn-sm btn-success">&#128222; Call</a>
     <a href="{{ $n->client->whatsappUrl() }}" target="_blank" class="btn btn-sm btn-primary">&#128172; WhatsApp</a>
     <button class="btn btn-sm btn-secondary" data-copy="{{ $n->client->phone }}">Copy #</button>
+    <button class="btn btn-sm btn-secondary" data-copy="{{ $n->whatsappMessage() }}" title="Copy message">&#128172; Msg</button>
   </div>
   @endif
 </div>

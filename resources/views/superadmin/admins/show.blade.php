@@ -39,14 +39,14 @@
     <div class="num">{{ $admin->sub_users_count }}</div>
     <div class="label">Sub-Users</div>
   </div>
-  <div class="stat-card">
+  <a href="{{ route('superadmin.admins.clients', $admin) }}" class="stat-card">
     <div class="num">{{ $admin->clients_count }}</div>
     <div class="label">Clients</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="{{ route('superadmin.tickets.index') }}" class="stat-card">
     <div class="num">{{ $tickets->count() }}</div>
     <div class="label">Tickets</div>
-  </div>
+  </a>
 </div>
 
 <div class="grid-2col">
@@ -118,11 +118,11 @@
         <tr>
           <td style="padding:.35rem 0;color:var(--muted);width:45%;">Status</td>
           <td style="padding:.35rem 0;">
-            <span style="padding:.2rem .6rem;border-radius:12px;font-size:.78rem;font-weight:600;{{ $admin->accountStatusBadgeStyle() }}">
+            <span class="badge {{ $admin->accountStatusBadgeClass() }}">
               {{ $admin->accountStatusLabel() }}
             </span>
             @if($admin->is_suspended)
-              <span style="padding:.2rem .6rem;border-radius:12px;font-size:.78rem;font-weight:600;background:#fee2e2;color:#991b1b;margin-left:.3rem;">
+              <span class="badge badge-danger" style="margin-left:.3rem;">
                 Suspended
               </span>
             @endif
@@ -146,11 +146,11 @@
             @php $days = $admin->daysUntilExpiry(); @endphp
             @if($days !== null)
               @if($days >= 0)
-                <span style="font-size:.75rem;color:{{ $days <= 14 ? '#92400e' : 'var(--muted)' }};">
+                <span class="{{ $days <= 14 ? 'text-warning-muted' : 'text-muted' }}" style="font-size:.75rem;">
                   ({{ $days }}d left)
                 </span>
               @else
-                <span style="font-size:.75rem;color:#991b1b;">({{ abs($days) }}d overdue)</span>
+                <span class="text-danger-muted" style="font-size:.75rem;">({{ abs($days) }}d overdue)</span>
               @endif
             @endif
           </td>
@@ -213,7 +213,7 @@
             <div style="font-size:.85rem;font-weight:500;">{{ $ticket->ticket_number }}</div>
             <div class="text-muted" style="font-size:.78rem;">{{ Str::limit($ticket->subject, 40) }}</div>
           </div>
-          <span class="badge badge-custom" style="font-size:.72rem;{{ $ticket->statusBadgeStyle() }}">
+          <span class="badge {{ $ticket->statusBadgeClass() }}" style="font-size:.72rem;">
             {{ $ticket->statusLabel() }}
           </span>
         </a>

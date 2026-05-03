@@ -22,12 +22,26 @@ class NotificationController extends Controller
     {
         $this->authorize('notifications.view');
 
-        $notifications = $this->tenantQuery()
-            ->with('client', 'event', 'interactions')
-            ->latest()
-            ->paginate(30);
+        $allUnread = $this->tenantQuery()
+            ->with('client.tenant', 'event')
+            ->where('is_read', false)
+            ->orderByDesc('triggered_date')
+            ->get();
 
-        return view('notifications.index', compact('notifications'));
+        $today    = $allUnread->filter(fn($n) => $n->triggered_date->isToday());
+        $thisWeek = $allUnread->filter(fn($n) => !$n->triggered_date->isToday()
+                                               && $n->triggered_date->gte(now()->subDays(6)));
+        $older    = $allUnread->filter(fn($n) => $n->triggered_date->lt(now()->subDays(6)));
+
+        $readNotifications = $this->tenantQuery()
+            ->with('client', 'event', 'interactions')
+            ->where('is_read', true)
+            ->latest()
+            ->paginate(20);
+
+        $unreadCount = $allUnread->count();
+
+        return view('notifications.index', compact('today', 'thisWeek', 'older', 'readNotifications', 'unreadCount'));
     }
 
     public function markRead(Notification $notification)

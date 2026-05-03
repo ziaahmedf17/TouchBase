@@ -43,6 +43,18 @@
           @error('phone')<div class="form-error">{{ $message }}</div>@enderror
         </div>
 
+        @if($user->isAdmin())
+        <div class="form-group">
+          <label class="form-label" for="business_name">Business Name</label>
+          <input type="text" id="business_name" name="business_name"
+                 class="form-control @error('business_name') is-error @enderror"
+                 value="{{ old('business_name', $user->business_name) }}"
+                 placeholder="e.g. Beauty Palace Salon">
+          <div class="form-hint">Shown as signature in WhatsApp message templates.</div>
+          @error('business_name')<div class="form-error">{{ $message }}</div>@enderror
+        </div>
+        @endif
+
         <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0;">
 
         <div class="card-title" style="font-size:.85rem;margin-bottom:.75rem;">Change Password <span class="text-muted" style="font-weight:400;">(leave blank to keep current)</span></div>
@@ -82,13 +94,13 @@
           <td style="padding:.4rem 0;">
             @php $alert = $user->planAlertType(); $days = $user->daysUntilExpiry(); @endphp
             @if($user->is_suspended)
-              <span style="padding:.2rem .6rem;border-radius:10px;font-size:.78rem;font-weight:700;background:#fee2e2;color:#991b1b;">Suspended</span>
+              <span class="badge badge-danger">Suspended</span>
             @elseif($alert === 'grace')
-              <span style="padding:.2rem .6rem;border-radius:10px;font-size:.78rem;font-weight:700;background:#fee2e2;color:#991b1b;">Grace Period</span>
+              <span class="badge badge-danger">Grace Period</span>
             @elseif($alert === 'expiring')
-              <span style="padding:.2rem .6rem;border-radius:10px;font-size:.78rem;font-weight:700;background:#fef3c7;color:#92400e;">Expiring Soon</span>
+              <span class="badge badge-warning">Expiring Soon</span>
             @elseif($user->plan_type)
-              <span style="padding:.2rem .6rem;border-radius:10px;font-size:.78rem;font-weight:700;background:#dcfce7;color:#166534;">Active</span>
+              <span class="badge badge-success">Active</span>
             @else
               <span class="text-muted" style="font-size:.82rem;">No plan</span>
             @endif
@@ -108,7 +120,7 @@
             @elseif($user->plan_expires_at)
               {{ $user->plan_expires_at->format('d M Y') }}
               @if($days !== null)
-                <div style="font-size:.75rem;margin-top:.1rem;color:{{ $days < 0 ? '#991b1b' : ($days <= 14 ? '#92400e' : 'var(--muted)') }};">
+                <div class="{{ $days < 0 ? 'text-danger-muted' : ($days <= 14 ? 'text-warning-muted' : 'text-muted') }}" style="font-size:.75rem;margin-top:.1rem;">
                   @if($days < 0) {{ abs($days) }} days overdue
                   @else {{ $days }} days remaining
                   @endif
@@ -136,7 +148,7 @@
         </tr>
         @if($user->business_type)
         <tr>
-          <td style="padding:.4rem 0;color:var(--muted);vertical-align:top;">Business</td>
+          <td style="padding:.4rem 0;color:var(--muted);vertical-align:top;">Business Type</td>
           <td style="padding:.4rem 0;">{{ $user->business_type }}</td>
         </tr>
         @endif

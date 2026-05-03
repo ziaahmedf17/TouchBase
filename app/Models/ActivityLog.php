@@ -53,16 +53,16 @@ class ActivityLog extends Model
         };
     }
 
-    public function actionBadgeStyle(): string
+    public function actionBadgeClass(): string
     {
         return match ($this->action) {
-            'payment_approved'  => 'background:#dcfce7;color:#166534;',
-            'payment_rejected'  => 'background:#fee2e2;color:#991b1b;',
-            'admin_suspended'   => 'background:#fee2e2;color:#991b1b;',
-            'admin_unsuspended' => 'background:#dcfce7;color:#166534;',
-            'plan_set'          => 'background:#dbeafe;color:#1e40af;',
-            'price_updated'     => 'background:#fef3c7;color:#92400e;',
-            default             => 'background:#f1f5f9;color:#475569;',
+            'payment_approved',
+            'admin_unsuspended' => 'badge-success',
+            'payment_rejected',
+            'admin_suspended'   => 'badge-danger',
+            'plan_set'          => 'badge-info',
+            'price_updated'     => 'badge-warning',
+            default             => 'badge-neutral',
         };
     }
 }

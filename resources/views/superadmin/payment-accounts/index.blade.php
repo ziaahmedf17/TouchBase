@@ -45,9 +45,9 @@
           <td data-label="Account Holder">{{ $account->account_holder }}</td>
           <td data-label="Status">
             @if($account->is_active)
-              <span class="badge badge-custom" style="background:#dcfce7;color:#166534;">Active</span>
+              <span class="badge badge-success">Active</span>
             @else
-              <span class="badge badge-custom" style="background:#f1f5f9;color:#475569;">Inactive</span>
+              <span class="badge badge-neutral">Inactive</span>
             @endif
           </td>
           <td data-label="Actions">

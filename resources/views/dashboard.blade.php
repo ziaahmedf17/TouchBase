@@ -11,14 +11,14 @@
 
 {{-- ── Plan expiry alerts ───────────────────── --}}
 @if($planAlert === 'expiring')
-  <div class="alert" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;margin-bottom:1rem;">
+  <div class="alert alert-warning" style="margin-bottom:1rem;">
     <strong>&#9888; Subscription Expiring Soon</strong> —
     Your {{ auth()->user()->planLabel() }} plan expires in {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }}.
     Please contact support to renew before it expires.
   </div>
 @elseif($planAlert === 'grace')
   @php $overdue = abs($daysLeft); @endphp
-  <div class="alert" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;margin-bottom:1rem;">
+  <div class="alert alert-danger" style="margin-bottom:1rem;">
     <strong>&#128680; Subscription Expired</strong> —
     Your {{ auth()->user()->planLabel() }} plan expired {{ $overdue }} day{{ $overdue == 1 ? '' : 's' }} ago.
     You are in a grace period. Please renew immediately to avoid account suspension.
@@ -27,29 +27,39 @@
 
 {{-- ── Stats ────────────────────────────────── --}}
 <div class="stats-grid">
-  <div class="stat-card">
+  <a href="{{ route('clients.index') }}" class="stat-card">
     <div class="num">{{ $stats['total_clients'] }}</div>
     <div class="label">Total Clients</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="{{ route('notifications.index') }}" class="stat-card">
     <div class="num" id="stat-unread">{{ $stats['unread_notifications'] }}</div>
     <div class="label">Unread Alerts</div>
-  </div>
-  <div class="stat-card">
+  </a>
+  <a href="{{ route('clients.index', ['visit' => 'week']) }}" class="stat-card">
     <div class="num">{{ $stats['upcoming_visits'] }}</div>
     <div class="label">Visits (next 7 days)</div>
-  </div>
-  <div class="stat-card" style="{{ $stats['not_contacted'] > 0 ? 'border-top:3px solid var(--warning);' : '' }}">
+  </a>
+  <a href="{{ route('clients.index', ['visit' => 'overdue']) }}" class="stat-card" style="{{ $stats['not_contacted'] > 0 ? 'border-top:3px solid var(--warning);' : '' }}">
     <div class="num" style="{{ $stats['not_contacted'] > 0 ? 'color:var(--warning);' : '' }}">
       {{ $stats['not_contacted'] }}
     </div>
     <div class="label">Not Contacted (30d)</div>
-  </div>
-  <div class="stat-card" style="{{ $stats['upcoming_events'] > 0 ? 'border-top:3px solid var(--primary);' : '' }}">
+  </a>
+  <a href="{{ route('calendar.index') }}" class="stat-card" style="{{ $stats['upcoming_events'] > 0 ? 'border-top:3px solid var(--primary);' : '' }}">
     <div class="num" style="{{ $stats['upcoming_events'] > 0 ? 'color:var(--primary);' : '' }}">
       {{ $stats['upcoming_events'] }}
     </div>
     <div class="label">Birthdays/Anniv. (7d)</div>
+  </a>
+  <div class="stat-card" style="{{ $stats['interactions_week'] > 0 ? 'border-top:3px solid var(--success);' : '' }}">
+    <div class="num" style="{{ $stats['interactions_week'] > 0 ? 'color:var(--success);' : '' }}">
+      {{ $stats['interactions_week'] }}
+    </div>
+    <div class="label">Interactions (7d)</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">{{ $stats['interactions_month'] }}</div>
+    <div class="label">Interactions (30d)</div>
   </div>
 </div>
 
@@ -110,8 +120,8 @@
       @if($daysLeft !== null && $u->plan_type !== 'lifetime')
       <div>
         <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem;">Remaining</div>
-        <div style="font-weight:600;font-size:.95rem;
-          color:{{ $daysLeft < 0 ? '#991b1b' : ($daysLeft <= 14 ? '#92400e' : 'var(--success)') }};">
+        <div class="{{ $daysLeft < 0 ? 'text-danger-muted' : ($daysLeft <= 14 ? 'text-warning-muted' : '') }}"
+             style="font-weight:600;font-size:.95rem;{{ $daysLeft >= 0 && $daysLeft > 14 ? 'color:var(--success);' : '' }}">
           @if($daysLeft < 0)
             Expired {{ abs($daysLeft) }}d ago
           @else
@@ -122,12 +132,12 @@
       @endif
     </div>
     @if($u->is_suspended)
-      <span style="padding:.3rem .75rem;border-radius:12px;font-size:.78rem;font-weight:700;background:#fee2e2;color:#991b1b;">
+      <span class="badge badge-danger" style="padding:.3rem .75rem;font-size:.78rem;">
         &#128274; Suspended
       </span>
     @elseif($u->plan_type)
-      <span style="padding:.3rem .75rem;border-radius:12px;font-size:.78rem;font-weight:700;
-        {{ $planAlert === 'grace' ? 'background:#fee2e2;color:#991b1b;' : ($planAlert === 'expiring' ? 'background:#fef3c7;color:#92400e;' : 'background:#dcfce7;color:#166534;') }}">
+      <span class="badge {{ $planAlert === 'grace' ? 'badge-danger' : ($planAlert === 'expiring' ? 'badge-warning' : 'badge-success') }}"
+            style="padding:.3rem .75rem;font-size:.78rem;">
         {{ $planAlert === 'grace' ? 'Grace Period' : ($planAlert === 'expiring' ? 'Expiring Soon' : 'Active') }}
       </span>
     @endif
@@ -146,6 +156,7 @@
 {{-- ── Quick actions ────────────────────────── --}}
 <div class="d-flex gap-2 mt-3" style="flex-wrap:wrap;">
   @can('clients.create')<a href="{{ route('clients.create') }}" class="btn btn-primary">+ Add Client</a>@endcan
+  <a href="{{ route('notifications.index') }}" class="btn btn-primary" style="background:var(--success);border-color:var(--success);">&#128276; Alerts @if($stats['unread_notifications'] > 0)<span style="background:rgba(255,255,255,.25);border-radius:8px;padding:0 .4rem;margin-left:.3rem;font-size:.8rem;">{{ $stats['unread_notifications'] }}</span>@endif</a>
   <a href="{{ route('calendar.index') }}"  class="btn btn-secondary">&#128197; Calendar</a>
   <a href="{{ route('clients.index') }}"   class="btn btn-secondary">&#128101; All Clients</a>
   @if($stats['not_contacted'] > 0)

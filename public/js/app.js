@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return '<div class="notif-item">'
             + '<div class="notif-item-title">'
             +   '<span class="badge ' + escHtml(ev.badge || '') + '" style="margin-right:.4rem;">' + escHtml(ev.type) + '</span>'
-            +   escHtml(ev.client)
+            +   escHtml(ev.client_name)
             + '</div>'
             + (ev.label ? '<div class="notif-item-meta">' + escHtml(ev.label) + '</div>' : '')
             + '<div class="notif-actions mt-2">'
@@ -328,6 +328,31 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('resp-at').value     = btn.dataset.responseAt || '';
     openModal('response-modal');
   });
+
+  // ── Dark mode toggle ─────────────────────
+  var themeToggleBtn = document.getElementById('theme-toggle');
+  var themeIcon      = document.getElementById('theme-icon');
+
+  function applyTheme(t) {
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (themeIcon) themeIcon.textContent = '☀'; // ☀
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      if (themeIcon) themeIcon.textContent = '☾'; // ☾
+    }
+  }
+
+  applyTheme(localStorage.getItem('theme') || 'light');
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function () {
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem('theme', next); } catch(e) {}
+      applyTheme(next);
+    });
+  }
 
   // ── Auto-dismiss flash alerts ─────────────
   document.querySelectorAll('.alert[data-auto-dismiss]').forEach(function (el) {

@@ -7,7 +7,14 @@
 <div class="profile-header">
   <div class="avatar">{{ strtoupper(substr($client->name, 0, 1)) }}</div>
   <div class="profile-header-info">
-    <div class="profile-name">{{ $client->name }}</div>
+    <div class="profile-name">
+      {{ $client->name }}
+      @if($client->gender)
+        <span class="badge badge-secondary" style="font-size:.7rem;vertical-align:middle;margin-left:.35rem;">
+          {{ ucfirst($client->gender) }}
+        </span>
+      @endif
+    </div>
     <div class="profile-meta">
       @if($client->phone)
         <a href="{{ $client->telUrl() }}">{{ $client->phone }}</a> &bull;

@@ -13,22 +13,47 @@
   @if($visit ?? null)
     <input type="hidden" name="visit" value="{{ $visit }}">
   @endif
+  @if($gender ?? null)
+    <input type="hidden" name="gender" value="{{ $gender }}">
+  @endif
+  @if(($sort ?? 'name') !== 'name' || ($dir ?? 'asc') !== 'asc')
+    <input type="hidden" name="sort" value="{{ $sort }}">
+    <input type="hidden" name="dir" value="{{ $dir }}">
+  @endif
   <button class="btn btn-secondary" type="submit">Search</button>
-  @if(($search ?? '') || ($visit ?? ''))
-    <a href="{{ route('clients.index') }}" class="btn btn-secondary">Clear</a>
+  @if(($search ?? '') || ($visit ?? '') || ($gender ?? ''))
+    <a href="{{ route('clients.index', array_filter(['sort' => $sort ?? null, 'dir' => $dir ?? null])) }}"
+       class="btn btn-secondary">Clear</a>
   @endif
 </form>
 
+@php
+  $baseParams = array_filter(['search' => $search, 'gender' => $gender, 'sort' => $sort, 'dir' => $dir]);
+@endphp
+
 {{-- Visit filters --}}
-<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:1rem;">
-  <a href="{{ route('clients.index', array_filter(['search' => $search])) }}"
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:.6rem;">
+  <a href="{{ route('clients.index', array_diff_key($baseParams, ['visit' => ''])) }}"
      class="btn btn-sm {{ !($visit ?? null) ? 'btn-primary' : 'btn-secondary' }}">All</a>
-  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'week'])) }}"
+  <a href="{{ route('clients.index', array_merge($baseParams, ['visit' => 'week'])) }}"
      class="btn btn-sm {{ ($visit ?? null) === 'week' ? 'btn-primary' : 'btn-secondary' }}">This Week</a>
-  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'month'])) }}"
+  <a href="{{ route('clients.index', array_merge($baseParams, ['visit' => 'month'])) }}"
      class="btn btn-sm {{ ($visit ?? null) === 'month' ? 'btn-primary' : 'btn-secondary' }}">This Month</a>
-  <a href="{{ route('clients.index', array_filter(['search' => $search, 'visit' => 'overdue'])) }}"
+  <a href="{{ route('clients.index', array_merge($baseParams, ['visit' => 'overdue'])) }}"
      class="btn btn-sm {{ ($visit ?? null) === 'overdue' ? 'btn-danger' : 'btn-secondary' }}">Overdue</a>
+</div>
+
+{{-- Gender filters --}}
+<div class="d-flex gap-2" style="flex-wrap:wrap;margin-bottom:1rem;">
+  @php $genderBase = array_filter(['search' => $search, 'visit' => $visit, 'sort' => $sort, 'dir' => $dir]); @endphp
+  <a href="{{ route('clients.index', $genderBase) }}"
+     class="btn btn-sm {{ !($gender ?? null) ? 'btn-primary' : 'btn-secondary' }}">All Genders</a>
+  <a href="{{ route('clients.index', array_merge($genderBase, ['gender' => 'male'])) }}"
+     class="btn btn-sm {{ ($gender ?? null) === 'male' ? 'btn-primary' : 'btn-secondary' }}">Male</a>
+  <a href="{{ route('clients.index', array_merge($genderBase, ['gender' => 'female'])) }}"
+     class="btn btn-sm {{ ($gender ?? null) === 'female' ? 'btn-primary' : 'btn-secondary' }}">Female</a>
+  <a href="{{ route('clients.index', array_merge($genderBase, ['gender' => 'other'])) }}"
+     class="btn btn-sm {{ ($gender ?? null) === 'other' ? 'btn-primary' : 'btn-secondary' }}">Other</a>
 </div>
 
 @if($clients->isEmpty())
@@ -37,16 +62,33 @@
     <p>No clients found. @can('clients.create')<a href="{{ route('clients.create') }}">Add your first client</a>.@endcan</p>
   </div>
 @else
+@php
+  $sortBase  = array_filter(['search' => $search, 'visit' => $visit, 'gender' => $gender]);
+  $nameDir   = ($sort === 'name' && $dir === 'asc') ? 'desc' : 'asc';
+  $visitDir  = ($sort === 'next_visit_date' && $dir === 'asc') ? 'desc' : 'asc';
+@endphp
 <div class="card" style="padding:0;">
   <div class="table-wrap">
     <table class="table-cards">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>
+            <a href="{{ route('clients.index', array_merge($sortBase, ['sort' => 'name', 'dir' => $nameDir])) }}"
+               class="sort-link {{ $sort === 'name' ? 'sort-active' : '' }}">
+              Name
+              <span class="sort-arrow">{{ $sort === 'name' ? ($dir === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </a>
+          </th>
           <th>Phone</th>
-          <th>Next Visit</th>
-          <th>Events</th>
-          <th style="width:130px;">Actions</th>
+          <th>
+            <a href="{{ route('clients.index', array_merge($sortBase, ['sort' => 'next_visit_date', 'dir' => $visitDir])) }}"
+               class="sort-link {{ $sort === 'next_visit_date' ? 'sort-active' : '' }}">
+              Next Visit
+              <span class="sort-arrow">{{ $sort === 'next_visit_date' ? ($dir === 'asc' ? '↑' : '↓') : '↕' }}</span>
+            </a>
+          </th>
+          <th>Last Contact</th>
+          <th style="width:170px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -79,10 +121,24 @@
               <span class="text-muted">—</span>
             @endif
           </td>
-          <td data-label="Events">{{ $client->events_count }}</td>
+          <td data-label="Last Contact">
+            @if($client->last_contacted_at)
+              @php $lc = \Carbon\Carbon::parse($client->last_contacted_at); @endphp
+              <span title="{{ $lc->format('d M Y, H:i') }}" style="font-size:.85rem;">
+                {{ $lc->diffForHumans() }}
+              </span>
+            @else
+              <span class="text-muted" style="font-size:.82rem;">Never</span>
+            @endif
+          </td>
           <td data-label="Actions">
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2" style="flex-wrap:wrap;">
               <a href="{{ route('clients.show', $client) }}" class="btn btn-sm btn-secondary">View</a>
+              @can('interactions.create')
+              <button class="btn btn-sm btn-secondary"
+                      data-open-log
+                      data-client-id="{{ $client->id }}">Log</button>
+              @endcan
               @can('clients.edit')
               <a href="{{ route('clients.edit', $client) }}" class="btn btn-sm btn-primary">Edit</a>
               @endcan
@@ -105,4 +161,8 @@
 {{-- Pagination --}}
 <div>{{ $clients->links('partials.pagination') }}</div>
 @endif
+
+@can('interactions.create')
+  @include('partials.interaction_modals')
+@endcan
 @endsection

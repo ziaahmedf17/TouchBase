@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'TouchBase') — Smart CRM for Growing Businesses</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   <style>
     * { box-sizing: border-box; }
@@ -124,8 +125,16 @@
       .lp-nav { padding: 0 1rem; }
       .lp-nav-links a.hide-mobile { display: none; }
       .lp-section { padding: 3.5rem 1.25rem; }
-      .lp-hero { padding: 5rem 1.25rem 4rem; }
+      .lp-hero { padding: 4rem 1.25rem 3rem; }
+      .lp-hero-title { letter-spacing: -.01em; }
       .lp-section-title { font-size: 1.6rem; }
+      .lp-section-sub { font-size: .95rem; }
+      /* Pricing / feature grids: single column */
+      .lp-pricing-grid { grid-template-columns: 1fr; }
+      /* Footer: stack vertically */
+      .lp-footer { padding: 2rem 1.25rem; }
+      .lp-footer-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+      .lp-footer-inner > div:last-child { text-align: left !important; }
     }
   </style>
   @stack('head')
