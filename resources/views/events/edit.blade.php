@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="page-header">
-  <h1 class="page-title">Edit Event — {{ $client->name }}</h1>
+  <h1 class="page-title">Edit Event: {{ $client->name }}</h1>
   <a href="{{ route('clients.show', $client) }}" class="btn btn-secondary">&larr; Back</a>
 </div>
 

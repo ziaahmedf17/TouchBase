@@ -1,65 +1,28 @@
 @extends('layouts.auth')
-@section('title', 'Payment')
+@section('title', 'Trial Expired')
 
 @section('content')
 <div style="text-align:center;margin-bottom:1.25rem;">
-  <div style="display:flex;justify-content:center;gap:0;margin-bottom:.5rem;">
-    <div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--muted);">
-      <span style="width:22px;height:22px;border-radius:50%;background:var(--success);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;">&#10003;</span>
-      Account Info
-    </div>
-    <div style="width:40px;height:2px;background:var(--primary);margin:0 .5rem;align-self:center;"></div>
-    <div style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:600;color:var(--primary);">
-      <span style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;">2</span>
-      Payment
-    </div>
+  <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#dbeafe;margin-bottom:.75rem;">
+    <span style="font-size:1.4rem;">&#127775;</span>
   </div>
+  <h2 class="auth-title" style="margin-bottom:.3rem;">Your Free Trial Has Ended</h2>
+  <p class="auth-subtitle">Subscribe to a paid plan to continue using TouchBase and keep all your data.</p>
 </div>
 
-<h2 class="auth-title">Choose Your Plan</h2>
-<p class="auth-subtitle">Start free for 14 days, or subscribe right away</p>
+@if(session('success'))
+  <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
-{{-- ── Free Trial Option ───────────────────── --}}
-<div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #2563eb;border-radius:var(--radius);padding:1.25rem 1.1rem;margin-bottom:1.25rem;">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
-    <div>
-      <div style="font-size:1rem;font-weight:700;color:#1e3a8a;margin-bottom:.25rem;">
-        &#127775; 14-Day Free Trial
-      </div>
-      <div style="font-size:.85rem;color:#1e40af;line-height:1.5;">
-        Full access to all features. No payment required.<br>
-        <span style="font-size:.78rem;color:#3b82f6;">Trial ends in 14 days. Upgrade anytime.</span>
-      </div>
-    </div>
-    <div style="font-size:1.5rem;font-weight:800;color:#2563eb;white-space:nowrap;">FREE</div>
-  </div>
-  <form method="POST" action="{{ route('register.trial.store') }}" style="margin-top:1rem;">
-    @csrf
-    <button type="submit"
-            style="width:100%;background:#2563eb;color:#fff;border:none;padding:.65rem 1rem;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;">
-      &#9654; Start Free Trial, No Payment Needed
-    </button>
-  </form>
+<div class="alert" style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;margin-bottom:1.25rem;font-size:.88rem;line-height:1.6;">
+  Your trial data is safe. Subscribe now and pick up right where you left off. All your clients, events, and interactions are still here.
 </div>
 
-<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;">
-  <div style="flex:1;height:1px;background:var(--border);"></div>
-  <span style="font-size:.8rem;color:var(--muted);white-space:nowrap;">or choose a paid plan</span>
-  <div style="flex:1;height:1px;background:var(--border);"></div>
-</div>
-
-{{-- Payment account cards --}}
-@if($accounts->isEmpty())
-  <div class="alert alert-info" style="margin-bottom:1.5rem;">
-    Payment account details are being set up. Transfer details will be shared with you shortly. You may still select a plan and upload your screenshot now.
-  </div>
-@else
+@if($accounts->isNotEmpty())
 <div style="display:grid;gap:.75rem;margin-bottom:1.5rem;">
   @foreach($accounts as $account)
   <div class="card" style="padding:1rem 1.1rem;">
-    <div style="font-weight:700;font-size:.95rem;margin-bottom:.6rem;color:var(--text);">
-      {{ $account->title }}
-    </div>
+    <div style="font-weight:700;font-size:.95rem;margin-bottom:.6rem;color:var(--text);">{{ $account->title }}</div>
     <table style="width:100%;font-size:.875rem;border-collapse:collapse;">
       <tr>
         <td style="color:var(--muted);padding:.25rem 0;width:42%;vertical-align:top;">Bank</td>
@@ -96,13 +59,15 @@
   </div>
   @endforeach
 </div>
+@else
+  <div class="alert alert-info" style="margin-bottom:1.5rem;">
+    Payment account details are being set up. Please contact support to get started.
+  </div>
 @endif
 
-{{-- Upload screenshot --}}
-<form method="POST" action="{{ route('register.payment.store') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('account.trial_upgrade') }}" enctype="multipart/form-data">
   @csrf
 
-  {{-- Plan selection --}}
   <div class="form-group" style="margin-bottom:1.25rem;">
     <label class="form-label">Select a Subscription Plan</label>
     @error('plan_type')<div class="form-error" style="margin-bottom:.5rem;">{{ $message }}</div>@enderror
@@ -149,19 +114,21 @@
   </div>
 
   <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.6rem;">
-    Submit Payment Screenshot
+    Submit Payment &amp; Activate
   </button>
 </form>
 
-<p style="text-align:center;margin-top:1.25rem;font-size:.82rem;color:var(--muted);">
-  Wrong account? <a href="{{ route('register') }}">Go back</a>
-</p>
+<div style="text-align:center;margin-top:1.5rem;">
+  <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit" class="btn btn-secondary" style="font-size:.85rem;">Sign Out</button>
+  </form>
+</div>
 @endsection
 
 @push('scripts')
 <script>
-  // Preview image before upload
-  document.getElementById('screenshot').addEventListener('change', function () {
+  document.getElementById('screenshot')?.addEventListener('change', function () {
     const file = this.files[0];
     if (!file) return;
     document.getElementById('preview-name').textContent = file.name;

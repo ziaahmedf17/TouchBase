@@ -19,6 +19,10 @@
     <div class="num" style="color:var(--success);">{{ $stats['active_admins'] }}</div>
     <div class="label">Active</div>
   </a>
+  <div class="stat-card">
+    <div class="num" style="color:#2563eb;">{{ $stats['trial_admins'] }}</div>
+    <div class="label">On Trial</div>
+  </div>
   <a href="{{ route('superadmin.payments.index', ['status' => 'pending']) }}" class="stat-card">
     <div class="num" style="color:var(--warning);">{{ $stats['pending_admins'] }}</div>
     <div class="label">Pending Approval</div>
@@ -149,6 +153,20 @@
         @endif
       @endforeach
 
+      {{-- Trial row --}}
+      @if(($planCounts['trial'] ?? 0) > 0)
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:#eff6ff;border-radius:var(--radius);border:1px solid #bfdbfe;">
+        <div>
+          <div style="font-weight:600;font-size:.9rem;color:#1e40af;">Free Trial</div>
+          <div style="font-size:.78rem;color:#3b82f6;">14-day free access</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:1.4rem;font-weight:700;line-height:1;color:#2563eb;">{{ $planCounts['trial'] }}</div>
+          <div style="font-size:.72rem;color:#3b82f6;">admin{{ $planCounts['trial'] == 1 ? '' : 's' }}</div>
+        </div>
+      </div>
+      @endif
+
       {{-- Total value --}}
       @if(($revenueSummary['total'] ?? 0) > 0)
       <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;border-top:2px solid var(--border);margin-top:.25rem;">
@@ -164,7 +182,7 @@
   {{-- Upcoming renewals --}}
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-      <div class="card-title" style="margin:0;">Renewals Due (30 days)</div>
+      <div class="card-title" style="margin:0;">Renewals &amp; Expiring Trials</div>
       <span style="font-size:.8rem;padding:.15rem .5rem;border-radius:10px;background:var(--bg);color:var(--muted);">
         {{ $upcomingRenewals->count() }}
       </span>
@@ -173,10 +191,13 @@
       @php $days = (int) now()->diffInDays($admin->plan_expires_at, false); @endphp
       <div style="display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);">
         <div>
-          <div style="font-size:.88rem;font-weight:600;">
+          <div style="font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:.4rem;">
             <a href="{{ route('superadmin.admins.show', $admin) }}" style="text-decoration:none;color:inherit;">{{ $admin->name }}</a>
+            @if($admin->plan_type === 'trial')
+              <span style="font-size:.65rem;background:#dbeafe;color:#1e40af;padding:.1rem .4rem;border-radius:6px;font-weight:700;">TRIAL</span>
+            @endif
           </div>
-          <div class="text-muted" style="font-size:.75rem;">{{ ucfirst($admin->plan_type) }} &bull; expires {{ $admin->plan_expires_at->format('d M Y') }}</div>
+          <div class="text-muted" style="font-size:.75rem;">{{ $admin->planLabel() }} &bull; expires {{ $admin->plan_expires_at->format('d M Y') }}</div>
         </div>
         <span class="{{ $days <= 7 ? 'renewal-days-danger' : 'renewal-days-warning' }}">
           {{ $days }}d

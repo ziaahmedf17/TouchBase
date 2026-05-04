@@ -50,7 +50,7 @@
     <label class="form-label" for="business_type">Business type</label>
     <select class="form-control @error('business_type') is-error @enderror"
             id="business_type" name="business_type" required>
-      <option value="">— Select your business type —</option>
+      <option value="">Select your business type</option>
       @php
         $types = [
           'Salon & Beauty', 'Real Estate', 'Healthcare & Clinic',

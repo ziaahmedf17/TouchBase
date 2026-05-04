@@ -18,6 +18,9 @@ class AccountActive
             if ($user->is_suspended) {
                 return redirect()->route('account.payment_required');
             }
+            if ($user->isOnTrial() && $user->plan_expires_at?->isPast()) {
+                return redirect()->route('account.trial_expired');
+            }
         }
         return $next($request);
     }

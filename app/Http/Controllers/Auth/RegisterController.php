@@ -58,6 +58,29 @@ class RegisterController extends Controller
         return view('auth.register-payment', compact('accounts', 'plans'));
     }
 
+    public function startTrial(Request $request)
+    {
+        if (!session('register_data')) {
+            return redirect()->route('register');
+        }
+
+        $data = session('register_data');
+
+        $user = User::create([
+            ...$data,
+            'account_status'  => 'active',
+            'plan_type'       => 'trial',
+            'plan_started_at' => now(),
+            'plan_expires_at' => now()->addDays(14),
+        ]);
+
+        $user->assignRole('admin');
+        session()->forget('register_data');
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('trial_started', true);
+    }
+
     public function storePayment(Request $request)
     {
         if (!session('register_data')) {
@@ -206,5 +229,54 @@ class RegisterController extends Controller
 
         return redirect()->route('account.payment_required')
             ->with('success', 'Renewal payment submitted. Our team will verify and reactivate your account shortly.');
+    }
+
+    public function showTrialExpired()
+    {
+        $user = Auth::user();
+        if ($user->account_status === 'payment_submitted') {
+            return redirect()->route('account.pending');
+        }
+        if ($user->account_status === 'active') {
+            if (!$user->isOnTrial() || ($user->plan_expires_at && !$user->plan_expires_at->isPast())) {
+                return redirect()->route('dashboard');
+            }
+        }
+        $accounts = PaymentAccount::where('is_active', true)->get();
+        $plans    = Plan::all()->keyBy('slug');
+        return view('auth.trial-expired', compact('accounts', 'plans'));
+    }
+
+    public function submitTrialUpgrade(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'plan_type'  => 'required|in:monthly,yearly,lifetime',
+            'screenshot' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:5120',
+        ], [
+            'plan_type.required'  => 'Please select a subscription plan.',
+            'screenshot.required' => 'Please upload your payment screenshot.',
+            'screenshot.mimes'    => 'Only JPG, PNG, GIF, or PDF files are accepted.',
+            'screenshot.max'      => 'File size must not exceed 5 MB.',
+        ]);
+
+        if ($user->payment_screenshot) {
+            Storage::disk('local')->delete('payments/' . $user->payment_screenshot);
+        }
+
+        $ext      = $request->file('screenshot')->getClientOriginalExtension();
+        $filename = Str::uuid() . '.' . strtolower($ext);
+        $request->file('screenshot')->storeAs('payments', $filename, 'local');
+
+        $user->update([
+            'account_status'       => 'payment_submitted',
+            'payment_screenshot'   => $filename,
+            'payment_submitted_at' => now(),
+            'plan_type'            => $request->plan_type,
+        ]);
+
+        return redirect()->route('account.pending')
+            ->with('success', 'Payment submitted! Our team will activate your subscription shortly.');
     }
 }

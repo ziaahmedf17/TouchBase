@@ -172,7 +172,7 @@
               @php $p = $plans[$slug] ?? null; @endphp
               @if($p)
                 <option value="{{ $p->slug }}" {{ $admin->plan_type === $p->slug ? 'selected' : '' }}>
-                  {{ $p->name }} — {{ $p->formattedPrice() }}
+                  {{ $p->name }} ({{ $p->formattedPrice() }})
                 </option>
               @endif
             @endforeach

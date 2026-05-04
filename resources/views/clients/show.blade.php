@@ -17,9 +17,16 @@
     </div>
     <div class="profile-meta">
       @if($client->phone)
-        <a href="{{ $client->telUrl() }}">{{ $client->phone }}</a> &bull;
+        <a href="{{ $client->telUrl() }}">{{ $client->phone }}</a>
       @endif
-      @if($client->address) {{ $client->address }} @endif
+      @if($client->email)
+        @if($client->phone) &bull; @endif
+        <a href="mailto:{{ $client->email }}">{{ $client->email }}</a>
+      @endif
+      @if($client->address)
+        @if($client->phone || $client->email) &bull; @endif
+        {{ $client->address }}
+      @endif
     </div>
   </div>
   <div class="profile-header-actions">

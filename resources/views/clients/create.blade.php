@@ -20,7 +20,7 @@
       <div class="form-group">
         <label class="form-label">Gender</label>
         <select class="form-control" name="gender">
-          <option value="">— Select —</option>
+          <option value="">Select</option>
           <option value="male"   {{ old('gender') === 'male'   ? 'selected' : '' }}>Male</option>
           <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
           <option value="other"  {{ old('gender') === 'other'  ? 'selected' : '' }}>Other</option>
@@ -32,6 +32,12 @@
       <label class="form-label">Phone</label>
       <input class="form-control" type="tel" name="phone" value="{{ old('phone') }}" placeholder="+92300…">
       @error('phone')<div class="form-error">{{ $message }}</div>@enderror
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email <span class="text-muted" style="font-weight:400;font-size:.82rem;">(optional)</span></label>
+      <input class="form-control" type="email" name="email" value="{{ old('email') }}" placeholder="client@example.com">
+      @error('email')<div class="form-error">{{ $message }}</div>@enderror
     </div>
 
     <div class="form-group">

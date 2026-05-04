@@ -72,7 +72,7 @@
   @csrf
   <div class="form-group">
     <label class="form-label">Upload new payment screenshot
-      <span class="text-muted" style="font-weight:400;font-size:.8rem;">(JPG, PNG, PDF — max 5 MB)</span>
+      <span class="text-muted" style="font-weight:400;font-size:.8rem;">(JPG, PNG, PDF, max 5 MB)</span>
     </label>
     <input type="file" name="screenshot"
            class="form-control @error('screenshot') is-error @enderror"

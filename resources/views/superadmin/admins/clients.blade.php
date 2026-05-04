@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $admin->name . ' — Clients')
+@section('title', $admin->name . ' | Clients')
 
 @section('content')
 @include('partials.superadmin_nav')

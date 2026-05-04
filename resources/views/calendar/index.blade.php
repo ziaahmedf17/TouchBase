@@ -42,8 +42,8 @@
           <a href="{{ $ev['client_url'] }}"
              class="cal-event {{ $ev['badge'] }}"
              onclick="event.stopPropagation()"
-             title="{{ $ev['client_name'] }} — {{ $ev['type'] }}">
-            {{ $ev['client_name'] }} — {{ $ev['type'] }}
+             title="{{ $ev['client_name'] }}: {{ $ev['type'] }}">
+            {{ $ev['client_name'] }}: {{ $ev['type'] }}
           </a>
         @else
           <span class="cal-event {{ $ev['badge'] }}">{{ $ev['type'] }}</span>

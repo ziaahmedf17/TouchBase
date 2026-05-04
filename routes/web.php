@@ -40,6 +40,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register',          [RegisterController::class, 'storeStep1']);
     Route::get('/register/payment',   [RegisterController::class, 'showPayment'])->name('register.payment');
     Route::post('/register/payment',  [RegisterController::class, 'storePayment'])->name('register.payment.store');
+    Route::post('/register/trial',    [RegisterController::class, 'startTrial'])->name('register.trial.store');
     Route::get('/password/forgot',    [PasswordController::class, 'showForgotForm'])->name('password.forgot');
     Route::post('/password/forgot',   [PasswordController::class, 'processForgot'])->name('password.forgot.submit');
     Route::get('/password/reset',     [PasswordController::class, 'showResetForm'])->name('password.reset.form');
@@ -62,6 +63,10 @@ Route::middleware('auth')->group(function () {
     // Suspended admin renewal — accessible while suspended
     Route::get('/payment-required',        [RegisterController::class, 'showPaymentRequired'])->name('account.payment_required');
     Route::post('/payment-required/renew', [RegisterController::class, 'resubmitRenewal'])->name('account.renewal');
+
+    // Trial expired — upgrade to paid plan
+    Route::get('/trial-expired',           [RegisterController::class, 'showTrialExpired'])->name('account.trial_expired');
+    Route::post('/trial-expired/upgrade',  [RegisterController::class, 'submitTrialUpgrade'])->name('account.trial_upgrade');
 
     // ── CRM routes (require active account for admins) ────────────
     Route::middleware('account_active')->group(function () {

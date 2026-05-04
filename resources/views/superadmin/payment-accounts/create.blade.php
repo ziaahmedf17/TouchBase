@@ -54,7 +54,7 @@
       <div class="form-group">
         <label class="form-label">
           Payment Instructions
-          <span class="text-muted" style="font-weight:400;font-size:.82rem;">(optional — shown to admins during registration)</span>
+          <span class="text-muted" style="font-weight:400;font-size:.82rem;">(optional, shown to admins during registration)</span>
         </label>
         <textarea name="instructions" class="form-control @error('instructions') is-error @enderror"
                   rows="3" maxlength="500"

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>@yield('title', 'TouchBase') — TouchBase CRM</title>
+  <title>@yield('title', 'TouchBase') | TouchBase CRM</title>
   <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
   <script>
     try { if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark'); } catch(e) {}
@@ -159,7 +159,7 @@
 </main>
 
 <footer style="border-top:1px solid var(--border);padding:.75rem 1rem;text-align:center;font-size:.75rem;color:var(--muted);margin-top:2rem;">
-  &copy; {{ date('Y') }} TouchBase &mdash; A product of
+  &copy; {{ date('Y') }} TouchBase. A product of
   <a href="https://genwizz.com" target="_blank" rel="noopener" style="color:var(--muted);">Genwizz.com</a>
   &nbsp;&bull;&nbsp;
   <a href="mailto:touchbase@genwizz.com" style="color:var(--muted);">touchbase@genwizz.com</a>

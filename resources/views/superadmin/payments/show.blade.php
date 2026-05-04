@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $admin->name . ' — Payment')
+@section('title', $admin->name . ' | Payment')
 
 @section('content')
 @include('partials.superadmin_nav')
@@ -105,7 +105,7 @@
             @php $p = $plans[$slug] ?? null; @endphp
             @if($p)
               <option value="{{ $p->slug }}" {{ ($admin->plan_type ?? 'monthly') === $p->slug ? 'selected' : '' }}>
-                {{ $p->name }} — {{ $p->formattedPrice() }}
+                {{ $p->name }} ({{ $p->formattedPrice() }})
               </option>
             @endif
           @endforeach

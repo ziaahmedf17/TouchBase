@@ -17,7 +17,8 @@ class DashboardController extends Controller
 
         $stats = [
             'total_admins'    => $adminQuery()->count(),
-            'active_admins'   => $adminQuery()->where('account_status', 'active')->where('is_suspended', false)->count(),
+            'active_admins'   => $adminQuery()->where('account_status', 'active')->where('is_suspended', false)->where('plan_type', '!=', 'trial')->count(),
+            'trial_admins'    => $adminQuery()->where('account_status', 'active')->where('plan_type', 'trial')->count(),
             'pending_admins'  => $adminQuery()->where('account_status', 'payment_submitted')->count(),
             'suspended_admins'=> $adminQuery()->where('is_suspended', true)->count(),
             'total_sub_users' => User::whereNotNull('tenant_id')->count(),
@@ -36,6 +37,7 @@ class DashboardController extends Controller
                 ->where('plan_type', $slug)
                 ->count();
         }
+        $planCounts['trial'] = $stats['trial_admins'];
 
         // Revenue summary — active subscription value at current plan prices
         $revenueSummary = [];
@@ -49,12 +51,20 @@ class DashboardController extends Controller
         }
         $revenueSummary['total'] = $totalValue;
 
-        // Upcoming renewals in next 30 days
+        // Upcoming renewals (paid plans: 30 days) + expiring trials (14 days)
         $upcomingRenewals = $adminQuery()
             ->where('account_status', 'active')
             ->where('is_suspended', false)
             ->whereNotNull('plan_expires_at')
-            ->whereBetween('plan_expires_at', [now(), now()->addDays(30)])
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('plan_type', '!=', 'trial')
+                       ->whereBetween('plan_expires_at', [now(), now()->addDays(30)]);
+                })->orWhere(function ($q2) {
+                    $q2->where('plan_type', 'trial')
+                       ->whereBetween('plan_expires_at', [now(), now()->addDays(14)]);
+                });
+            })
             ->orderBy('plan_expires_at')
             ->get(['id', 'name', 'email', 'phone', 'plan_type', 'plan_expires_at']);
 

@@ -72,6 +72,7 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool { return $this->hasRole('super_admin'); }
     public function isAdmin(): bool      { return $this->hasRole('admin'); }
     public function isActive(): bool     { return $this->account_status === 'active'; }
+    public function isOnTrial(): bool    { return $this->plan_type === 'trial'; }
 
     public function tenantId(): ?int
     {
@@ -118,6 +119,7 @@ class User extends Authenticatable
             'monthly'  => 'Monthly',
             'yearly'   => 'Yearly',
             'lifetime' => 'Lifetime',
+            'trial'    => 'Free Trial',
             default    => 'No Plan',
         };
     }
@@ -128,14 +130,15 @@ class User extends Authenticatable
         return (int) now()->diffInDays($this->plan_expires_at, false);
     }
 
-    /**
-     * Returns alert type for the admin dashboard:
-     * 'expiring' (1–14 days left), 'grace' (0 to -7 days past expiry), or null.
-     */
     public function planAlertType(): ?string
     {
         $days = $this->daysUntilExpiry();
         if ($days === null) return null;
+        if ($this->isOnTrial()) {
+            if ($days >= 0 && $days <= 3) return 'trial_ending';
+            if ($days > 3)                return 'trial_active';
+            return null;
+        }
         if ($days >= 0 && $days <= 14) return 'expiring';
         if ($days < 0 && $days >= -7)  return 'grace';
         return null;

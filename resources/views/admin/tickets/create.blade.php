@@ -33,7 +33,7 @@
       <label class="form-label">Description <span style="color:var(--danger)">*</span></label>
       <textarea name="description" id="description" rows="6"
                 class="form-control @error('description') is-invalid @enderror"
-                placeholder="Describe the issue in detail — include steps to reproduce if applicable."
+                placeholder="Describe the issue in detail. Include steps to reproduce if applicable."
                 maxlength="2000" required>{{ old('description') }}</textarea>
       <div style="display:flex;justify-content:space-between;margin-top:.25rem;">
         @error('description')

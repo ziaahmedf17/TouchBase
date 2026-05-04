@@ -16,7 +16,7 @@
 
 @if(auth()->user()->account_status === 'payment_submitted')
   <div class="alert" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;margin-bottom:1.25rem;">
-    <strong>Payment Under Review</strong> — Your renewal payment has been submitted. Our team will verify and reactivate your account shortly.
+    <strong>Payment Under Review:</strong> Your renewal payment has been submitted. Our team will verify and reactivate your account shortly.
   </div>
 @else
 
@@ -92,7 +92,7 @@
           <div style="flex:1;">
             <div style="font-weight:700;font-size:.95rem;">{{ $p->name }}</div>
             <div class="text-muted" style="font-size:.8rem;">
-              @if($p->slug === 'lifetime') Lifetime access — pay once
+              @if($p->slug === 'lifetime') Lifetime access, pay once
               @elseif($p->slug === 'yearly') Valid for 1 year
               @else Valid for 30 days
               @endif
@@ -108,7 +108,7 @@
   <div class="form-group">
     <label class="form-label" for="screenshot">
       Upload payment screenshot
-      <span class="text-muted" style="font-weight:400;font-size:.82rem;">(JPG, PNG, or PDF — max 5 MB)</span>
+      <span class="text-muted" style="font-weight:400;font-size:.82rem;">(JPG, PNG, or PDF, max 5 MB)</span>
     </label>
     <input type="file" class="form-control @error('screenshot') is-error @enderror"
            id="screenshot" name="screenshot"

@@ -9,17 +9,36 @@
 
 <div id="alert-result" class="alert" style="display:none"></div>
 
-{{-- ── Plan expiry alerts ───────────────────── --}}
-@if($planAlert === 'expiring')
+@if(session('trial_started'))
+  <div class="alert alert-success" style="margin-bottom:1rem;">
+    <strong>&#127775; Welcome! Your 14-day free trial has started.</strong>
+    Explore all features with no payment needed. Upgrade anytime before the trial ends.
+  </div>
+@endif
+
+{{-- ── Plan / trial alerts ─────────────────── --}}
+@if($planAlert === 'trial_active')
+  <div class="alert" style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;margin-bottom:1rem;">
+    <strong>&#127775; Free Trial Active:</strong>
+    {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} remaining in your free trial.
+    <a href="#subscription-info" style="color:#2563eb;font-weight:600;margin-left:.5rem;">Upgrade to a paid plan &rarr;</a>
+  </div>
+@elseif($planAlert === 'trial_ending')
   <div class="alert alert-warning" style="margin-bottom:1rem;">
-    <strong>&#9888; Subscription Expiring Soon</strong> —
+    <strong>&#9888; Trial Ending Soon:</strong>
+    Only {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} left in your free trial.
+    <a href="#subscription-info" style="color:inherit;font-weight:600;text-decoration:underline;margin-left:.3rem;">Upgrade now</a> to keep your data and access.
+  </div>
+@elseif($planAlert === 'expiring')
+  <div class="alert alert-warning" style="margin-bottom:1rem;">
+    <strong>&#9888; Subscription Expiring Soon:</strong>
     Your {{ auth()->user()->planLabel() }} plan expires in {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }}.
     Please contact support to renew before it expires.
   </div>
 @elseif($planAlert === 'grace')
   @php $overdue = abs($daysLeft); @endphp
   <div class="alert alert-danger" style="margin-bottom:1rem;">
-    <strong>&#128680; Subscription Expired</strong> —
+    <strong>&#128680; Subscription Expired:</strong>
     Your {{ auth()->user()->planLabel() }} plan expired {{ $overdue }} day{{ $overdue == 1 ? '' : 's' }} ago.
     You are in a grace period. Please renew immediately to avoid account suspension.
   </div>
@@ -98,7 +117,7 @@
 {{-- ── Subscription info (admins only) ─────── --}}
 @if(auth()->user()->isAdmin())
 @php $u = auth()->user(); @endphp
-<div class="card" style="margin-bottom:1rem;">
+<div class="card" id="subscription-info" style="margin-bottom:1rem;">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
     <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
       <div>
@@ -106,7 +125,9 @@
         <div style="font-weight:700;font-size:.95rem;">{{ $u->planLabel() }}</div>
       </div>
       <div>
-        <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem;">Expiry</div>
+        <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem;">
+          {{ $u->isOnTrial() ? 'Trial Ends' : 'Expiry' }}
+        </div>
         <div style="font-weight:600;font-size:.95rem;">
           @if($u->plan_type === 'lifetime')
             <span style="color:var(--success);">Never</span>
@@ -120,8 +141,7 @@
       @if($daysLeft !== null && $u->plan_type !== 'lifetime')
       <div>
         <div class="text-muted" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem;">Remaining</div>
-        <div class="{{ $daysLeft < 0 ? 'text-danger-muted' : ($daysLeft <= 14 ? 'text-warning-muted' : '') }}"
-             style="font-weight:600;font-size:.95rem;{{ $daysLeft >= 0 && $daysLeft > 14 ? 'color:var(--success);' : '' }}">
+        <div style="font-weight:600;font-size:.95rem;color:{{ $daysLeft < 0 ? 'var(--danger)' : ($daysLeft <= 7 ? 'var(--warning)' : 'var(--success)') }};">
           @if($daysLeft < 0)
             Expired {{ abs($daysLeft) }}d ago
           @else
@@ -131,16 +151,24 @@
       </div>
       @endif
     </div>
-    @if($u->is_suspended)
-      <span class="badge badge-danger" style="padding:.3rem .75rem;font-size:.78rem;">
-        &#128274; Suspended
-      </span>
-    @elseif($u->plan_type)
-      <span class="badge {{ $planAlert === 'grace' ? 'badge-danger' : ($planAlert === 'expiring' ? 'badge-warning' : 'badge-success') }}"
-            style="padding:.3rem .75rem;font-size:.78rem;">
-        {{ $planAlert === 'grace' ? 'Grace Period' : ($planAlert === 'expiring' ? 'Expiring Soon' : 'Active') }}
-      </span>
-    @endif
+    <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+      @if($u->is_suspended)
+        <span class="badge badge-danger" style="padding:.3rem .75rem;font-size:.78rem;">&#128274; Suspended</span>
+      @elseif($u->isOnTrial())
+        <span class="badge" style="background:#dbeafe;color:#1e40af;padding:.3rem .75rem;font-size:.78rem;">
+          &#127775; Free Trial
+        </span>
+        <a href="{{ route('account.trial_expired') }}"
+           style="font-size:.8rem;color:#2563eb;font-weight:600;text-decoration:none;white-space:nowrap;">
+          Upgrade &rarr;
+        </a>
+      @elseif($u->plan_type)
+        <span class="badge {{ $planAlert === 'grace' ? 'badge-danger' : ($planAlert === 'expiring' ? 'badge-warning' : 'badge-success') }}"
+              style="padding:.3rem .75rem;font-size:.78rem;">
+          {{ $planAlert === 'grace' ? 'Grace Period' : ($planAlert === 'expiring' ? 'Expiring Soon' : 'Active') }}
+        </span>
+      @endif
+    </div>
   </div>
 </div>
 @endif

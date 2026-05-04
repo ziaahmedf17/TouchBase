@@ -27,12 +27,15 @@
     Never Miss a Moment.
   </h1>
   <p class="lp-hero-sub">
-    TouchBase is a smart CRM that keeps your client relationships strong — birthday reminders, visit tracking, team collaboration, and more. All in one place.
+    TouchBase is a smart CRM that keeps your client relationships strong. Birthday reminders, visit tracking, team collaboration, and more. All in one place.
   </p>
   <div class="lp-hero-cta">
-    <a href="{{ route('register') }}" class="lp-btn-white">Get Started Free</a>
+    <a href="{{ route('register') }}" class="lp-btn-white">Start Your 14-Day Free Trial</a>
     <a href="#how-it-works" class="lp-btn-outline">See How It Works</a>
   </div>
+  <p style="color:rgba(255,255,255,.7);font-size:.82rem;margin-top:.75rem;">
+    No credit card required &bull; Full access &bull; Cancel anytime
+  </p>
 </section>
 
 {{-- ── Features ─────────────────────────────── --}}
@@ -40,7 +43,7 @@
   <div class="lp-container">
     <div class="lp-section-label">Features</div>
     <h2 class="lp-section-title">Everything you need to grow client relationships</h2>
-    <p class="lp-section-sub">From first contact to long-term loyalty — TouchBase handles the details so you can focus on your business.</p>
+    <p class="lp-section-sub">From first contact to long-term loyalty, TouchBase handles the details so you can focus on your business.</p>
 
     <div class="lp-features-grid">
       <div class="lp-feature-card">
@@ -51,7 +54,7 @@
       <div class="lp-feature-card">
         <div class="lp-feature-icon">&#128276;</div>
         <div class="lp-feature-title">Smart Reminders</div>
-        <p class="lp-feature-text">Automatic alerts for birthdays, anniversaries, and upcoming visits — days in advance. Never forget an important date again.</p>
+        <p class="lp-feature-text">Automatic alerts for birthdays, anniversaries, and upcoming visits, days in advance. Never forget an important date again.</p>
       </div>
       <div class="lp-feature-card">
         <div class="lp-feature-icon">&#128197;</div>
@@ -71,7 +74,7 @@
       <div class="lp-feature-card">
         <div class="lp-feature-icon">&#128274;</div>
         <div class="lp-feature-title">Secure & Private</div>
-        <p class="lp-feature-text">Your data is fully isolated from other businesses. No shared data, no risk — each account has its own private workspace.</p>
+        <p class="lp-feature-text">Your data is fully isolated from other businesses. No shared data, no risk. Each account has its own private workspace.</p>
       </div>
     </div>
   </div>
@@ -82,28 +85,28 @@
   <div class="lp-container">
     <div class="lp-section-label">How It Works</div>
     <h2 class="lp-section-title">Up and running in minutes</h2>
-    <p class="lp-section-sub">No technical setup required. Register, pay, and you're in.</p>
+    <p class="lp-section-sub">No technical setup required. Start your free trial instantly with no payment needed.</p>
 
     <div class="lp-steps">
       <div class="lp-step">
         <div class="lp-step-num">1</div>
         <div>
           <div class="lp-step-title">Register your business</div>
-          <p class="lp-step-text">Fill in your business details, choose a subscription plan, and transfer the payment to our bank account.</p>
+          <p class="lp-step-text">Fill in your business details and create your account. Takes less than 2 minutes.</p>
         </div>
       </div>
       <div class="lp-step">
         <div class="lp-step-num">2</div>
         <div>
-          <div class="lp-step-title">Upload payment screenshot</div>
-          <p class="lp-step-text">Take a screenshot of your bank transfer and upload it. Our team reviews and approves accounts within a few hours.</p>
+          <div class="lp-step-title">Start free or subscribe</div>
+          <p class="lp-step-text">Choose the 14-day free trial and get instant access with no payment needed. Or subscribe right away with a monthly, yearly, or lifetime plan.</p>
         </div>
       </div>
       <div class="lp-step">
         <div class="lp-step-num">3</div>
         <div>
           <div class="lp-step-title">Start managing clients</div>
-          <p class="lp-step-text">Once approved, log in and start adding clients, setting up reminders, and building your team. That's it.</p>
+          <p class="lp-step-text">You're in. Add clients, set up reminders, and build your team. Trial users can upgrade anytime to keep their data.</p>
         </div>
       </div>
     </div>
@@ -188,8 +191,8 @@
     </div>
 
     <p style="text-align:center;margin-top:2rem;font-size:.88rem;color:#64748b;">
-      All plans include full access to all features. Prices are in Pakistani Rupees (Rs.).<br>
-      Payment is manual — transfer to our bank account and upload a screenshot.
+      Start with a 14-day free trial, no credit card required.<br>
+      All paid plans include full access. Prices in Pakistani Rupees (Rs.). Payment via bank transfer.
     </p>
   </div>
 </section>
@@ -198,12 +201,15 @@
 <section style="background:linear-gradient(135deg,#1e3a8a,#2563eb);padding:5rem 2rem;text-align:center;color:#fff;">
   <div style="max-width:560px;margin:0 auto;">
     <h2 style="font-size:2rem;font-weight:800;margin:0 0 1rem;letter-spacing:-.02em;">
-      Ready to take control of your client relationships?
+      Try TouchBase free for 14 days
     </h2>
-    <p style="color:rgba(255,255,255,.85);font-size:1rem;line-height:1.7;margin:0 0 2rem;">
-      Join hundreds of businesses already using TouchBase to grow stronger client bonds.
+    <p style="color:rgba(255,255,255,.85);font-size:1rem;line-height:1.7;margin:0 0 .5rem;">
+      No credit card. No commitment. Full access from day one.
     </p>
-    <a href="{{ route('register') }}" class="lp-btn-white">Create Your Account</a>
+    <p style="color:rgba(255,255,255,.65);font-size:.85rem;margin:0 0 2rem;">
+      Join businesses already using TouchBase to grow stronger client bonds.
+    </p>
+    <a href="{{ route('register') }}" class="lp-btn-white">Start Free Trial &rarr;</a>
   </div>
 </section>
 
