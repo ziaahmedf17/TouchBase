@@ -46,7 +46,31 @@
       "PowerShell(Out-Null *)",
       "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\public\\\\css\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\public\\\\css\" /MIR /NFL /NDL /NJH /NJS)",
       "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\public\\\\css\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\public\\\\css\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\" /E /NFL /NDL /NJH /NJS)",
-      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\database\\\\migrations\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\database\\\\migrations\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)"
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\database\\\\migrations\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\database\\\\migrations\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\\\\Http\\\\Controllers\\\\Auth\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\\\\Http\\\\Controllers\\\\Auth\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\\\\auth\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\\\\auth\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)",
+      "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\" /E /XD .git node_modules /XF \"*.log\" /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS)",
+      "Bash(git commit -m 'Fix registration flow bugs and add cache clear tool *)",
+      "PowerShell(New-Item *)",
+      "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS)",
+      "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\" /E /NFL /NDL /NJH /NJS)",
+      "Bash(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\" /E /NFL /NDL /NJH /NJS; robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\routes\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\routes\" /E /NFL /NDL /NJH /NJS; Write-Host \"Sync done\")",
+      "PowerShell(composer *)",
+      "PowerShell($env:PATH -split ';' | Where-Object { $_ -ne '' })",
+      "PowerShell(Start-Sleep -Seconds 5; Get-Item \"C:\\\\Users\\\\HP\\\\Downloads\\\\touchbase-hostinger.zip\" -ErrorAction SilentlyContinue | ForEach-Object { \"Size: $\\([math]::Round\\($_.Length / 1MB, 1\\)\\) MB — $\\($_.FullName\\)\" })",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\" /E /NFL /NDL /NJH /NJS; Write-Host \"Synced. Exit: $LASTEXITCODE\")",
+      "PowerShell(Get-Item \"C:\\\\Users\\\\HP\\\\Downloads\\\\touchbase-hostinger.zip\" -ErrorAction SilentlyContinue | ForEach-Object { \"Found: $\\($_.FullName\\) — $\\([math]::Round\\($_.Length / 1MB, 1\\)\\) MB\" })",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\\\\Models\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\\\\Models\" Client.php /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\app\\\\Http\\\\Controllers\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\app\\\\Http\\\\Controllers\" ClientController.php /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\resources\\\\views\\\\clients\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\resources\\\\views\\\\clients\" /E /NFL /NDL /NJH /NJS)",
+      "PowerShell(robocopy \"C:\\\\Users\\\\HP\\\\Downloads\\\\TouchBase\\\\database\\\\migrations\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\database\\\\migrations\" 2024_01_01_000023_add_email_to_clients_table.php /NFL /NDL /NJH /NJS)",
+      "PowerShell(& \"C:\\\\laragon\\\\bin\\\\php\\\\php8.2.10\\\\php.exe\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\artisan\" migrate 2>&1)",
+      "PowerShell(& \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\artisan\" migrate 2>&1)",
+      "PowerShell(& \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\" \"C:\\\\laragon\\\\www\\\\TouchBaseNew\\\\artisan\" migrate --force 2>&1)",
+      "Bash(git commit *)"
     ]
   }
 }
