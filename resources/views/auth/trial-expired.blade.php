@@ -3,7 +3,7 @@
 
 @section('content')
 <div style="text-align:center;margin-bottom:1.25rem;">
-  <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#dbeafe;margin-bottom:.75rem;">
+  <div class="icon-circle icon-circle-info">
     <span style="font-size:1.4rem;">&#127775;</span>
   </div>
   <h2 class="auth-title" style="margin-bottom:.3rem;">Your Free Trial Has Ended</h2>
@@ -14,7 +14,7 @@
   <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
-<div class="alert" style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;margin-bottom:1.25rem;font-size:.88rem;line-height:1.6;">
+<div class="alert alert-info" style="font-size:.88rem;line-height:1.6;">
   Your trial data is safe. Subscribe now and pick up right where you left off. All your clients, events, and interactions are still here.
 </div>
 

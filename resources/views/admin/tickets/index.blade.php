@@ -9,11 +9,11 @@
 </div>
 
 @if(session('ticket_submitted'))
-<div class="card" style="border-left:4px solid var(--success);background:#f0fdf4;padding:1.25rem 1.5rem;margin-bottom:1.25rem;">
+<div class="ticket-submitted-card">
   <div style="font-size:1.1rem;font-weight:700;color:var(--success);margin-bottom:.25rem;">
     &#10003; Ticket #{{ session('ticket_submitted') }} submitted successfully
   </div>
-  <div style="color:#166534;font-size:.9rem;">Team will reach out to you soon.</div>
+  <div class="ticket-submitted-note">Team will reach out to you soon.</div>
   <div class="text-muted" style="font-size:.8rem;margin-top:.35rem;">
     Submitted on {{ now()->format('d M Y \a\t H:i') }}
   </div>

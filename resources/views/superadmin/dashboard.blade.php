@@ -20,7 +20,7 @@
     <div class="label">Active</div>
   </a>
   <div class="stat-card">
-    <div class="num" style="color:#2563eb;">{{ $stats['trial_admins'] }}</div>
+    <div class="num" style="color:var(--primary);">{{ $stats['trial_admins'] }}</div>
     <div class="label">On Trial</div>
   </div>
   <a href="{{ route('superadmin.payments.index', ['status' => 'pending']) }}" class="stat-card">
@@ -155,14 +155,14 @@
 
       {{-- Trial row --}}
       @if(($planCounts['trial'] ?? 0) > 0)
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:#eff6ff;border-radius:var(--radius);border:1px solid #bfdbfe;">
+      <div class="plan-row-trial">
         <div>
-          <div style="font-weight:600;font-size:.9rem;color:#1e40af;">Free Trial</div>
-          <div style="font-size:.78rem;color:#3b82f6;">14-day free access</div>
+          <div class="plan-row-trial-label">Free Trial</div>
+          <div class="plan-row-trial-sub">14-day free access</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:1.4rem;font-weight:700;line-height:1;color:#2563eb;">{{ $planCounts['trial'] }}</div>
-          <div style="font-size:.72rem;color:#3b82f6;">admin{{ $planCounts['trial'] == 1 ? '' : 's' }}</div>
+          <div class="plan-row-trial-count">{{ $planCounts['trial'] }}</div>
+          <div class="plan-row-trial-sub" style="font-size:.72rem;">admin{{ $planCounts['trial'] == 1 ? '' : 's' }}</div>
         </div>
       </div>
       @endif
@@ -194,7 +194,7 @@
           <div style="font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:.4rem;">
             <a href="{{ route('superadmin.admins.show', $admin) }}" style="text-decoration:none;color:inherit;">{{ $admin->name }}</a>
             @if($admin->plan_type === 'trial')
-              <span style="font-size:.65rem;background:#dbeafe;color:#1e40af;padding:.1rem .4rem;border-radius:6px;font-weight:700;">TRIAL</span>
+              <span class="badge badge-info" style="font-size:.65rem;padding:.1rem .4rem;border-radius:6px;">TRIAL</span>
             @endif
           </div>
           <div class="text-muted" style="font-size:.75rem;">{{ $admin->planLabel() }} &bull; expires {{ $admin->plan_expires_at->format('d M Y') }}</div>

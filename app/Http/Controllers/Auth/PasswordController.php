@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
@@ -21,6 +22,10 @@ class PasswordController extends Controller
             'current_password' => ['required', 'current_password'],
             'password'         => ['required', 'confirmed', Password::min(8)],
         ]);
+
+        if (Hash::check($request->password, $request->user()->password)) {
+            return back()->withErrors(['password' => 'New password must be different from your current password.']);
+        }
 
         $request->user()->update(['password' => $request->password]);
 

@@ -947,6 +947,54 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
   font-size: .875rem;
 }
 
+/* ── Auth icon circles ───────────────────────────────── */
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  margin-bottom: .75rem;
+}
+.icon-circle-info   { background: #dbeafe; }
+.icon-circle-danger { background: #fee2e2; }
+
+/* ── Ticket submitted flash card ─────────────────────── */
+.ticket-submitted-card {
+  border-left: 4px solid var(--success);
+  background: #f0fdf4;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.ticket-submitted-note { color: #166534; font-size: .9rem; }
+
+/* ── Free-trial offer card (register-payment) ───────── */
+.trial-offer-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+.trial-offer-title { font-size: 1rem;  font-weight: 700; color: #1e3a8a; margin-bottom: .25rem; }
+.trial-offer-desc  { font-size: .85rem; color: #1e40af; line-height: 1.5; }
+.trial-offer-sub   { font-size: .78rem; color: #2563eb; }
+.trial-offer-price { font-size: 1.5rem; font-weight: 800; color: #2563eb; white-space: nowrap; }
+
+/* ── Plan row: trial (superadmin) ────────────────────── */
+.plan-row-trial {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .6rem .75rem;
+  background: #eff6ff;
+  border-radius: var(--radius);
+  border: 1px solid #bfdbfe;
+}
+.plan-row-trial-label { font-weight: 600; font-size: .9rem;  color: #1e40af; }
+.plan-row-trial-sub   { font-size: .78rem; color: #3b82f6; }
+.plan-row-trial-count { font-size: 1.4rem; font-weight: 700; line-height: 1; color: #2563eb; }
+
 /* ── Dark mode toggle button ─────────────────────────── */
 .theme-toggle-btn {
   background: rgba(255,255,255,.15);
@@ -1056,8 +1104,6 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
 [data-theme="dark"] .notif-dropdown,
 [data-theme="dark"] .user-dropdown { box-shadow: 0 8px 24px rgba(0,0,0,.55); }
 
-/* Notification items */
-[data-theme="dark"] .notif-item:hover { background: #263245; }
 [data-theme="dark"] .notif-footer { border-top: 1px solid var(--border); background: var(--surface); }
 [data-theme="dark"] .notif-footer a { color: #60a5fa; }
 
@@ -1088,8 +1134,10 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
 [data-theme="dark"] .status-banner.badge-neutral { background: #1e293b; color: #94a3b8; }
 
 /* Announcement preview box */
-[data-theme="dark"] .announcement-preview { background: #451a03; border-color: #92400e; color: #fde68a; }
-[data-theme="dark"] .announcement-preview-body { color: #fde68a; }
+[data-theme="dark"] .announcement-preview       { background: #451a03; border-color: #92400e; color: #fde68a; }
+[data-theme="dark"] .announcement-preview-title { color: #fde68a; }
+[data-theme="dark"] .announcement-preview-body  { color: #fde68a; }
+[data-theme="dark"] .announcement-preview-meta  { color: #fbbf24; }
 
 /* Inline text color utilities */
 [data-theme="dark"] .text-warning-muted { color: #fde68a; }
@@ -1098,3 +1146,24 @@ a.cal-event:hover { opacity: .85; text-decoration: underline; }
 /* Renewal days pill */
 [data-theme="dark"] .renewal-days-warning { background: #78350f; color: #fde68a; }
 [data-theme="dark"] .renewal-days-danger  { background: #450a0a; color: #fecaca; }
+
+/* Auth icon circles */
+[data-theme="dark"] .icon-circle-info   { background: #1e3a5f; }
+[data-theme="dark"] .icon-circle-danger { background: #450a0a; }
+
+/* Ticket submitted flash card */
+[data-theme="dark"] .ticket-submitted-card { background: #14532d; }
+[data-theme="dark"] .ticket-submitted-note { color: #bbf7d0; }
+
+/* Free-trial offer card */
+[data-theme="dark"] .trial-offer-card  { background: linear-gradient(135deg, #1e3a5f, #1a2e4a); border-color: var(--primary); }
+[data-theme="dark"] .trial-offer-title { color: #bfdbfe; }
+[data-theme="dark"] .trial-offer-desc  { color: #93c5fd; }
+[data-theme="dark"] .trial-offer-sub   { color: #60a5fa; }
+[data-theme="dark"] .trial-offer-price { color: #60a5fa; }
+
+/* Plan row: trial (superadmin) */
+[data-theme="dark"] .plan-row-trial             { background: #1e3a5f; border-color: #1d4ed8; }
+[data-theme="dark"] .plan-row-trial-label        { color: #bfdbfe; }
+[data-theme="dark"] .plan-row-trial-sub,
+[data-theme="dark"] .plan-row-trial-count        { color: #93c5fd; }

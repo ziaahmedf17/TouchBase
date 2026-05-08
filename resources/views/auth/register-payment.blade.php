@@ -20,23 +20,20 @@
 <p class="auth-subtitle">Start free for 14 days, or subscribe right away</p>
 
 {{-- ── Free Trial Option ───────────────────── --}}
-<div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #2563eb;border-radius:var(--radius);padding:1.25rem 1.1rem;margin-bottom:1.25rem;">
+<div class="trial-offer-card">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
     <div>
-      <div style="font-size:1rem;font-weight:700;color:#1e3a8a;margin-bottom:.25rem;">
-        &#127775; 14-Day Free Trial
-      </div>
-      <div style="font-size:.85rem;color:#1e40af;line-height:1.5;">
+      <div class="trial-offer-title">&#127775; 14-Day Free Trial</div>
+      <div class="trial-offer-desc">
         Full access to all features. No payment required.<br>
-        <span style="font-size:.78rem;color:#3b82f6;">Trial ends in 14 days. Upgrade anytime.</span>
+        <span class="trial-offer-sub">Trial ends in 14 days. Upgrade anytime.</span>
       </div>
     </div>
-    <div style="font-size:1.5rem;font-weight:800;color:#2563eb;white-space:nowrap;">FREE</div>
+    <div class="trial-offer-price">FREE</div>
   </div>
   <form method="POST" action="{{ route('register.trial.store') }}" style="margin-top:1rem;">
     @csrf
-    <button type="submit"
-            style="width:100%;background:#2563eb;color:#fff;border:none;padding:.65rem 1rem;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.65rem 1rem;font-size:.95rem;">
       &#9654; Start Free Trial, No Payment Needed
     </button>
   </form>

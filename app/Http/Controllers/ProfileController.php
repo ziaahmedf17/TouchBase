@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
@@ -29,6 +30,10 @@ class ProfileController extends Controller
         }
 
         $data = $request->validate($rules);
+
+        if (!empty($data['password']) && Hash::check($data['password'], $user->password)) {
+            return back()->withErrors(['password' => 'New password must be different from your current password.']);
+        }
 
         $update = [
             'name'  => $data['name'],

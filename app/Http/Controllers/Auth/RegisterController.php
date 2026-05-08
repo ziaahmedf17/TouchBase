@@ -237,10 +237,8 @@ class RegisterController extends Controller
         if ($user->account_status === 'payment_submitted') {
             return redirect()->route('account.pending');
         }
-        if ($user->account_status === 'active') {
-            if (!$user->isOnTrial() || ($user->plan_expires_at && !$user->plan_expires_at->isPast())) {
-                return redirect()->route('dashboard');
-            }
+        if ($user->account_status === 'active' && !$user->isOnTrial()) {
+            return redirect()->route('dashboard');
         }
         $accounts = PaymentAccount::where('is_active', true)->get();
         $plans    = Plan::all()->keyBy('slug');

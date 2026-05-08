@@ -3,7 +3,7 @@
 
 @section('content')
 <div style="text-align:center;margin-bottom:1.25rem;">
-  <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#fee2e2;margin-bottom:.75rem;">
+  <div class="icon-circle icon-circle-danger">
     <span style="font-size:1.4rem;">&#128274;</span>
   </div>
   <h2 class="auth-title" style="margin-bottom:.3rem;">Account Suspended</h2>
@@ -15,13 +15,13 @@
 @endif
 
 @if(auth()->user()->account_status === 'payment_submitted')
-  <div class="alert" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;margin-bottom:1.25rem;">
+  <div class="alert alert-warning">
     <strong>Payment Under Review:</strong> Your renewal payment has been submitted. Our team will verify and reactivate your account shortly.
   </div>
 @else
 
 {{-- Renewal instructions --}}
-<div class="alert" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;margin-bottom:1.25rem;font-size:.88rem;line-height:1.6;">
+<div class="alert alert-danger" style="font-size:.88rem;line-height:1.6;">
   To reactivate your account, select a plan, make the payment to the account below, and upload your screenshot. Our team will verify and restore access.
 </div>
 

@@ -107,9 +107,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Poll unread count every 60 s
   function pollUnreadCount() {
-    fetch('/notifications/unread-count')
-      .then(r => r.json())
-      .then(d => updateBellCount(d.count))
+    fetch('/notifications/unread-count', {
+      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) updateBellCount(d.count); })
       .catch(() => {});
   }
   pollUnreadCount();

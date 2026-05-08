@@ -18,10 +18,10 @@
 
 {{-- ── Plan / trial alerts ─────────────────── --}}
 @if($planAlert === 'trial_active')
-  <div class="alert" style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;margin-bottom:1rem;">
+  <div class="alert alert-info">
     <strong>&#127775; Free Trial Active:</strong>
     {{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} remaining in your free trial.
-    <a href="#subscription-info" style="color:#2563eb;font-weight:600;margin-left:.5rem;">Upgrade to a paid plan &rarr;</a>
+    <a href="#subscription-info" style="font-weight:600;margin-left:.5rem;">Upgrade to a paid plan &rarr;</a>
   </div>
 @elseif($planAlert === 'trial_ending')
   <div class="alert alert-warning" style="margin-bottom:1rem;">
@@ -155,11 +155,11 @@
       @if($u->is_suspended)
         <span class="badge badge-danger" style="padding:.3rem .75rem;font-size:.78rem;">&#128274; Suspended</span>
       @elseif($u->isOnTrial())
-        <span class="badge" style="background:#dbeafe;color:#1e40af;padding:.3rem .75rem;font-size:.78rem;">
+        <span class="badge badge-info" style="padding:.3rem .75rem;font-size:.78rem;">
           &#127775; Free Trial
         </span>
         <a href="{{ route('account.trial_expired') }}"
-           style="font-size:.8rem;color:#2563eb;font-weight:600;text-decoration:none;white-space:nowrap;">
+           style="font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap;">
           Upgrade &rarr;
         </a>
       @elseif($u->plan_type)
