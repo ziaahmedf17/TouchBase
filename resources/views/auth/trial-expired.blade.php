@@ -1,13 +1,19 @@
 @extends('layouts.auth')
-@section('title', 'Trial Expired')
+@section('title', 'Upgrade Plan')
 
 @section('content')
+@php $trialDaysLeft = auth()->user()->daysUntilExpiry(); $trialExpired = $trialDaysLeft !== null && $trialDaysLeft < 0; @endphp
 <div style="text-align:center;margin-bottom:1.25rem;">
   <div class="icon-circle icon-circle-info">
     <span style="font-size:1.4rem;">&#127775;</span>
   </div>
-  <h2 class="auth-title" style="margin-bottom:.3rem;">Your Free Trial Has Ended</h2>
-  <p class="auth-subtitle">Subscribe to a paid plan to continue using TouchBase and keep all your data.</p>
+  @if($trialExpired)
+    <h2 class="auth-title" style="margin-bottom:.3rem;">Your Free Trial Has Ended</h2>
+    <p class="auth-subtitle">Subscribe to a paid plan to continue using TouchBase and keep all your data.</p>
+  @else
+    <h2 class="auth-title" style="margin-bottom:.3rem;">Upgrade to a Paid Plan</h2>
+    <p class="auth-subtitle">You have {{ $trialDaysLeft }} day{{ $trialDaysLeft == 1 ? '' : 's' }} left in your trial. Lock in a plan now and keep everything running seamlessly.</p>
+  @endif
 </div>
 
 @if(session('success'))
@@ -15,7 +21,7 @@
 @endif
 
 <div class="alert alert-info" style="font-size:.88rem;line-height:1.6;">
-  Your trial data is safe. Subscribe now and pick up right where you left off. All your clients, events, and interactions are still here.
+  Your data is safe. Subscribe now and pick up right where you left off. All your clients, events, and interactions are still here.
 </div>
 
 @if($accounts->isNotEmpty())

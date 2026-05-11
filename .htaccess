@@ -13,19 +13,18 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Serve static assets directly from public/ subfolder
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(css|js|images|storage|favicon\.svg|robots\.txt)(.*)$ public/$1$2 [L,QSA]
+
+    # Redirect trailing slashes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Send all requests to front controller
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # ── Hostinger deployment ──────────────────────────────────────────
-    # Uncomment the line below and set the absolute path to your Laravel
-    # project folder (the directory that contains app/, vendor/, etc.)
-    # SetEnv LARAVEL_ROOT /home/username/touchbase
 
 </IfModule>
